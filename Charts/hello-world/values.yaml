@@ -28,7 +28,7 @@ affinity: {}
 
 env:
   - name: ASPNETCORE_URLS
-    value: "<path:kv/data/prod/hello#ASPNETCORE_URLS>"   # AVP: Vault KV v2
+    value: "<path:hello-world/data/URL/#ASPNETCORE_URLS>"   # AVP: Vault KV v2
 
 # (Opsiyonel) ekstra env
 extraEnv: []

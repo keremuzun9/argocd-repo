@@ -1,0 +1,34 @@
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: mcr.microsoft.com/dotnet/samples
+  tag: aspnetapp
+  pullPolicy: Always
+
+replicaCount: 5
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  host: io.tradesoft.services
+  path: /hello
+  pathType: ImplementationSpecific
+
+podLabels: {}
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+env:
+  - name: ASPNETCORE_URLS
+    value: "<path:kv/data/prod/hello#ASPNETCORE_URLS>"   # AVP: Vault KV v2
+
+# (Opsiyonel) ekstra env
+extraEnv: []

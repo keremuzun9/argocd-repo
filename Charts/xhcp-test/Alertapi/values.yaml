@@ -8,7 +8,7 @@ global:
   # ConfigMap adı ve volumeMount subPath'i için kullanılan prefix
   appPrefix: "<path:xhcp-test-alertapi/data/values/#appPrefix>" 
   # Ortak Altyapı Servisleri için Domain Soneki (Boş bırakılabilir)
-  commonSuffix: "<path:xhcp-test-alertapi/data/values/#commonSuffix>" # Örn: "common". Boşsa sadece servis adı kullanılır (haproxy:6379).
+  commonSuffix: "<path:xhcp-test-alertapi/data/values/#commonSuffix>" 
 
 replicaCount: "<path:xhcp-test-alertapi/data/values/#replicaCount>"
 
@@ -30,9 +30,9 @@ config:
   logging:
     elk:
       enabled: true
-      host: "<path:xhcp-test-alertapi/data/values/#loggingElkHost>" # Suffix Chart içinde eklenecek
+      host: "<path:xhcp-test-alertapi/data/values/#loggingElkHost>" 
       username: "<path:xhcp-test-alertapi/data/values/#loggingElkUsername>"
-      password: "<path:xhcp-test-alertapi/data/values/#loggingElkPassword>" # VAULT'tan gelecek
+      password: "<path:xhcp-test-alertapi/data/values/#loggingElkPassword>" 
       
   # Kafka Ayarları
   kafka:
@@ -40,16 +40,16 @@ config:
     securityEnabled: "<path:xhcp-test-alertapi/data/values/#configKafkaSecurityEnabled>" 
     secure:
       bootstrapservers: ""
-      saslpassword: "" # VAULT'tan gelecek
+      saslpassword: "" 
       saslusername: ""
     insecure:
       bootstrapservers: "<path:xhcp-test-alertapi/data/values/#configKafkaInsecureBootstrapservers>"
 
   # Redis Ayarları
   redis:
-    host: "<path:xhcp-test-alertapi/data/values/#redisHost>" # Suffix Chart içinde eklenecek
+    host: "<path:xhcp-test-alertapi/data/values/#redisHost>" 
     port: "<path:xhcp-test-alertapi/data/values/#redisPort>"
-    password: "<path:xhcp-test-alertapi/data/values/#redisPassword>" # VAULT'tan gelecek
+    password: "<path:xhcp-test-alertapi/data/values/#redisPassword>" 
 
 # Kubernetes Kaynak Limitleri
 resources:

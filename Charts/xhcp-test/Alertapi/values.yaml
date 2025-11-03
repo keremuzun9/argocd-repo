@@ -65,5 +65,3 @@ ingress:
   enabled: true
   host: "<path:xhcp-test-alertapi/data/values/#ingressHost>" 
   rewriteTarget: /$2
-  # Service objesinin adını kullanır
-  serviceName: {{ .Values.global.appName }}

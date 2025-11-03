@@ -2,25 +2,25 @@
 
 global:
   # Kubernetes Namespace'i
-  namespace: fibamobil 
+  namespace: "<path:xhcp-test-alertapi/data/values/#namespace>" 
   # Deployment, Service, Label ve Selector adı
-  appName: fiba-mobil-alertapi 
+  appName: "<path:xhcp-test-alertapi/data/values/#appName>" 
   # ConfigMap adı ve volumeMount subPath'i için kullanılan prefix
-  appPrefix: fiba-mobil 
+  appPrefix: "<path:xhcp-test-alertapi/data/values/#appPrefix>" 
   # Ortak Altyapı Servisleri için Domain Soneki (Boş bırakılabilir)
-  commonSuffix: "" # Örn: "common". Boşsa sadece servis adı kullanılır (haproxy:6379).
+  commonSuffix: "<path:xhcp-test-alertapi/data/values/#commonSuffix>" # Örn: "common". Boşsa sadece servis adı kullanılır (haproxy:6379).
 
-replicaCount: 1
+replicaCount: "<path:xhcp-test-alertapi/data/values/#replicaCount>"
 
 image:
-  repository: io.tradesoft.com.tr/xhcp/alertapi
-  tag: dev
-  pullPolicy: Always
+  repository: "<path:xhcp-test-alertapi/data/values/#imageRepository>"
+  tag: "<path:xhcp-test-alertapi/data/values/#imageTag>"
+  pullPolicy: "<path:xhcp-test-alertapi/data/values/#imagePullPolicy>"
   
 # Konfigürasyon Ayarları
 config:
   # ENV değişkenleri için referans alınan ConfigMap'in adı
-  configMapKeyRefName: fiba-mobil-config-test 
+  configMapKeyRefName: "<path:xhcp-test-alertapi/data/values/#configConfigMapKeyRefName>" 
   
   # ----------------------------------------------------
   # ConfigMap İçindeki Değişkenler (Vault/Ortam Bağımlı)
@@ -30,26 +30,26 @@ config:
   logging:
     elk:
       enabled: true
-      host: elasticsearch # Suffix Chart içinde eklenecek
-      username: elastic
-      password: wVuWv6oN1gcT=MS6iB-M # VAULT'tan gelecek
+      host: "<path:xhcp-test-alertapi/data/values/#loggingElkHost>" # Suffix Chart içinde eklenecek
+      username: "<path:xhcp-test-alertapi/data/values/#loggingElkUsername>"
+      password: "<path:xhcp-test-alertapi/data/values/#loggingElkPassword>" # VAULT'tan gelecek
       
   # Kafka Ayarları
   kafka:
     # Kafka şifreli ise 'true', değilse 'false'. ConfigMap içeriğini değiştirir.
-    securityEnabled: true 
+    securityEnabled: "<path:xhcp-test-alertapi/data/values/#configKafkaSecurityEnabled>" 
     secure:
-      bootstrapservers: common-kafka-bootstrap.common:9092
-      saslpassword: jT7Z8PJsWU94DsBeTUDUat1id0O94KIQ # VAULT'tan gelecek
-      saslusername: fiba-test-user
+      bootstrapservers: ""
+      saslpassword: "" # VAULT'tan gelecek
+      saslusername: ""
     insecure:
-      bootstrapservers: pasha-xhcp-kafka-bootstrap:9092 
+      bootstrapservers: "<path:xhcp-test-alertapi/data/values/#configKafkaInsecureBootstrapservers>"
 
   # Redis Ayarları
   redis:
-    host: haproxy # Suffix Chart içinde eklenecek
-    port: 6379
-    password: 2aUE0T1iqLY1 # VAULT'tan gelecek
+    host: "<path:xhcp-test-alertapi/data/values/#redisHost>" # Suffix Chart içinde eklenecek
+    port: "<path:xhcp-test-alertapi/data/values/#redisPort>"
+    password: "<path:xhcp-test-alertapi/data/values/#redisPassword>" # VAULT'tan gelecek
 
 # Kubernetes Kaynak Limitleri
 resources:
@@ -63,7 +63,7 @@ resources:
 # Ingress Ayarları
 ingress:
   enabled: true
-  host: mobil-testxhcpauth.fibayatirim.com.tr 
+  host: "<path:xhcp-test-alertapi/data/values/#ingressHost>" 
   rewriteTarget: /$2
   # Service objesinin adını kullanır
   serviceName: {{ .Values.global.appName }}

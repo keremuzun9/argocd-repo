@@ -1,0 +1,69 @@
+# alertapi/values.yaml
+
+global:
+  # Kubernetes Namespace'i
+  namespace: fibamobil 
+  # Deployment, Service, Label ve Selector adı
+  appName: fiba-mobil-alertapi 
+  # ConfigMap adı ve volumeMount subPath'i için kullanılan prefix
+  appPrefix: fiba-mobil 
+  # Ortak Altyapı Servisleri için Domain Soneki (Boş bırakılabilir)
+  commonSuffix: "" # Örn: "common". Boşsa sadece servis adı kullanılır (haproxy:6379).
+
+replicaCount: 1
+
+image:
+  repository: io.tradesoft.com.tr/xhcp/alertapi
+  tag: dev
+  pullPolicy: Always
+  
+# Konfigürasyon Ayarları
+config:
+  # ENV değişkenleri için referans alınan ConfigMap'in adı
+  configMapKeyRefName: fiba-mobil-config-test 
+  
+  # ----------------------------------------------------
+  # ConfigMap İçindeki Değişkenler (Vault/Ortam Bağımlı)
+  # ----------------------------------------------------
+  
+  # Loglama Ayarları
+  logging:
+    elk:
+      enabled: true
+      host: elasticsearch # Suffix Chart içinde eklenecek
+      username: elastic
+      password: wVuWv6oN1gcT=MS6iB-M # VAULT'tan gelecek
+      
+  # Kafka Ayarları
+  kafka:
+    # Kafka şifreli ise 'true', değilse 'false'. ConfigMap içeriğini değiştirir.
+    securityEnabled: true 
+    secure:
+      bootstrapservers: common-kafka-bootstrap.common:9092
+      saslpassword: jT7Z8PJsWU94DsBeTUDUat1id0O94KIQ # VAULT'tan gelecek
+      saslusername: fiba-test-user
+    insecure:
+      bootstrapservers: pasha-xhcp-kafka-bootstrap:9092 
+
+  # Redis Ayarları
+  redis:
+    host: haproxy # Suffix Chart içinde eklenecek
+    port: 6379
+    password: 2aUE0T1iqLY1 # VAULT'tan gelecek
+
+# Kubernetes Kaynak Limitleri
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 20m
+    memory: 100Mi
+
+# Ingress Ayarları
+ingress:
+  enabled: true
+  host: mobil-testxhcpauth.fibayatirim.com.tr 
+  rewriteTarget: /$2
+  # Service objesinin adını kullanır
+  serviceName: {{ .Values.global.appName }}

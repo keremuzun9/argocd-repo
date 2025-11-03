@@ -8,7 +8,7 @@ global:
   # ConfigMap adı ve volumeMount subPath'i için kullanılan prefix
   appPrefix: xhcp-test
   # Ortak Altyapı Servisleri için Domain Soneki (Boş bırakılabilir)
-  commonSuffix: "" 
+  commonSuffix: stack
 
 replicaCount: 1
 

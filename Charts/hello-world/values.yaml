@@ -6,7 +6,7 @@ image:
   tag: aspnetapp
   pullPolicy: Always
 
-replicaCount: 5
+replicaCount: 1
 
 service:
   type: ClusterIP

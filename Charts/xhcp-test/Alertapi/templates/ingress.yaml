@@ -1,4 +1,4 @@
-# alertapi/templates/ingress.yaml
+# alertapi/templates/ingress.yaml 
 {{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -6,7 +6,7 @@ metadata:
   name: {{ .Values.global.appName }}-ingress
   namespace: {{ .Values.global.namespace }}
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: {{ .Values.ingress.rewriteTarget }}
+    nginx.ingress.kubernetes.io/rewrite-target: {{ .Values.ingress.rewriteTarget | quote }} # Tırnak ekledim
     nginx.ingress.kubernetes.io/use-regex: 'true'
 spec:
   ingressClassName: nginx
@@ -14,11 +14,12 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - backend:
+          - path: /
+            pathType: Prefix
+            backend:
               service:
-                name: {{ .Values.ingress.serviceName }}
+                # KRİTİK DÜZELTME: Bu kısmı en sade şekilde yazıyoruz.
+                name: {{ .Values.global.appName }} 
                 port:
                   number: 80
-            path: /
-            pathType: Prefix
 {{- end }}

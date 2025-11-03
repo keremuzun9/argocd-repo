@@ -1,4 +1,3 @@
-# alertapi/templates/configmap.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,7 +5,7 @@ metadata:
   name: {{ include "alertapi.configMapName" . }}
   namespace: {{ .Values.global.namespace }}
 data:
-  # configMap mount subPath'i: fiba-mobil-alertapi-appsettings.k8s.json
+  # configMap mount subPath'i: xhcp-test-alertapi-appsettings.k8s.json
   {{ .Values.global.appPrefix }}-alertapi-appsettings.k8s.json: |
     {
       "Serilog": {
@@ -23,8 +22,8 @@ data:
         }
       },
       "RbApiClient": {
-          "URL": "http://haproxy.common:8080/RBApi/"
-        },
+        "URL": "http://haproxy.common:8080/RBApi/"
+      },
       "IdentityServerOptions": {
         "URL": "https://authio.tradesoft.com.tr",
         "Client": "xhcp.public",
@@ -44,48 +43,46 @@ data:
       },
       
       {{- if eq .Values.config.kafka.securityEnabled "true" }}
-      # ŞİFRELİ KAFKA AYARLARI (securityEnabled: "true" ise çalışır)
-      "KafkaProducer": {
-        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
-        "saslmechanism": "ScramSha512",
-        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
-        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
-        "securityprotocol": "SaslPlaintext"
-      },
-      "KafkaConsumer": {
-        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
-        "groupid": "xHCP.fiba-mobil-alertservice",
-        "enableautocommit": true,
-        "statisticsintervalms": 5000,
-        "sessiontimeoutms": 6000,
-        "autooffsetreset": 0,
-        "enablepartitioneof": true,
-        "saslmechanism": "ScramSha512",
-        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
-        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
-        "securityprotocol": "SaslPlaintext"
-      },
-      {{- else }}
-      # ŞİFRESİZ KAFKA AYARLARI (securityEnabled: "false" veya boş ise çalışır)
-      "KafkaProducer": {
-        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}"
-      },
-      "KafkaConsumer": {
-        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}",
-        "groupid": "xHCP.Alert.Service",
-        "enableautocommit": true,
-        "statisticsintervalms": 5000,
-        "sessiontimeoutms": 6000,
-        "autooffsetreset": 0,
-        "enablepartitioneof": true
-      },
-      {{- end }}
+      "KafkaProducer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "groupid": "xHCP.fiba-mobil-alertservice",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true,
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      {{- else }}
+      "KafkaProducer": {
+        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}",
+        "groupid": "xHCP.Alert.Service",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true
+      },
+      {{- end }}
       
       "Redis": {
         "Host": {{ include "alertapi.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }},
         "Port": {{ .Values.config.redis.port }},
         "Password": "{{ .Values.config.redis.password }}",
-        "Configuration": {{ printf "%s:%d" 
+        "Configuration": {{ printf "%s:%s" 
                              (include "alertapi.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix))
                              .Values.config.redis.port | quote }}
       },

@@ -43,43 +43,43 @@ data:
         "ConnectionString": "Application Name=xHCP.Conn.Mssql.Test;data source=10.0.155.5;initial catalog=gtpbrdbtsdev;user id=10.0.155.5;Password=10.0.155.5;persist security info=True;"
       },
       
-      {{- if .Values.config.kafka.securityEnabled }}
-      # ŞİFRELİ KAFKA AYARLARI (securityEnabled: true)
-      "KafkaProducer": {
-        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
-        "saslmechanism": "ScramSha512",
-        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
-        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
-        "securityprotocol": "SaslPlaintext"
-      },
-      "KafkaConsumer": {
-        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
-        "groupid": "xHCP.fiba-mobil-alertservice",
-        "enableautocommit": true,
-        "statisticsintervalms": 5000,
-        "sessiontimeoutms": 6000,
-        "autooffsetreset": 0,
-        "enablepartitioneof": true,
-        "saslmechanism": "ScramSha512",
-        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
-        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
-        "securityprotocol": "SaslPlaintext"
-      },
-      {{- else }}
-      # ŞİFRESİZ KAFKA AYARLARI (securityEnabled: false)
-      "KafkaProducer": {
-        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}"
-      },
-      "KafkaConsumer": {
-        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}", 
-        "groupid": "xHCP.Alert.Service",
-        "enableautocommit": true,
-        "statisticsintervalms": 5000,
-        "sessiontimeoutms": 6000,
-        "autooffsetreset": 0,
-        "enablepartitioneof": true
-      },
-      {{- end }}
+      {{- if eq .Values.config.kafka.securityEnabled "true" }}
+      # ŞİFRELİ KAFKA AYARLARI (securityEnabled: "true" ise çalışır)
+      "KafkaProducer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "groupid": "xHCP.fiba-mobil-alertservice",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true,
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      {{- else }}
+      # ŞİFRESİZ KAFKA AYARLARI (securityEnabled: "false" veya boş ise çalışır)
+      "KafkaProducer": {
+        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}",
+        "groupid": "xHCP.Alert.Service",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true
+      },
+      {{- end }}
       
       "Redis": {
         "Host": {{ include "alertapi.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }},

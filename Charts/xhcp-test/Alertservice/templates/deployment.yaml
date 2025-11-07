@@ -40,112 +40,112 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   key: RbApiClient__URL
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: Logging__ELK__Enabled
               valueFrom:
                 configMapKeyRef:
                   key: Logging__ELK__Enabled
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: Logging__ELK__Url
               valueFrom:
                 configMapKeyRef:
                   key: Logging__ELK__Url
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: Logging__ELK__Username
               valueFrom:
                 configMapKeyRef:
                   key: Logging__ELK__Username
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: Logging__ELK__Password
               valueFrom:
                 configMapKeyRef:
                   key: Logging__ELK__Password
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: Company
               valueFrom:
                 configMapKeyRef:
                   key: Company
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: DataSourceConfig__Source
               valueFrom:
                 configMapKeyRef:
                   key: DataSourceConfig__Source
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: IdentityServer__Uri
               valueFrom:
                 configMapKeyRef:
                   key: IdentityServer__Uri
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: PDApiClientSettings__URL
               valueFrom:
                 configMapKeyRef:
                   key: PDApiClientSettings__URL
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: Redis__Host
               valueFrom:
                 configMapKeyRef:
                   key: Redis__Host
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: Redis__Port
               valueFrom:
                 configMapKeyRef:
                   key: Redis__Port
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: Redis__Password
               valueFrom:
                 configMapKeyRef:
                   key: Redis__Password
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: Redis__DbId
               valueFrom:
                 configMapKeyRef:
                   key: Redis__DbId
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: Redis__Configuration
               valueFrom:
                 configMapKeyRef:
                   key: Redis__Configuration
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: KafkaProducer__bootstrapservers
               valueFrom:
                 configMapKeyRef:
                   key: KafkaProducer__bootstrapservers
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: KafkaConsumer__bootstrapservers
               valueFrom:
                 configMapKeyRef:
                   key: KafkaConsumer__bootstrapservers
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: MssqlDbConfig__ConnectionString
               valueFrom:
                 configMapKeyRef:
                   key: MssqlDbConfig__ConnectionString
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: AltibaseDbConfig__ConnectionString
               valueFrom:
                 configMapKeyRef:
                   key: AltibaseDbConfig__ConnectionString
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: ReportApiSettings
               valueFrom:
                 configMapKeyRef:
                   key: ReportApiSettings
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: ReportApiSettings__URL
               valueFrom:
                 configMapKeyRef:
                   key: ReportApiSettings__URL
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: ConnectionStrings__DbContext
               valueFrom:
                 configMapKeyRef:
                   key: ConnectionStrings__DbContext
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
             - name: DataSource
               valueFrom:
                 configMapKeyRef:
                   key: DataSource
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ include "alertservice.envConfigMapRefName" . }}
 
           ports:
             - containerPort: 80
@@ -179,5 +179,5 @@ spec:
         - configMap:
             defaultMode: 420
             # helpers.tpl'den gelen dinamik ConfigMap adı
-            name: {{ include "alertservice.configMapName" . }}
+            name: {{ include "alertservice.envConfigMapRefName" . }}
           name: config-vol

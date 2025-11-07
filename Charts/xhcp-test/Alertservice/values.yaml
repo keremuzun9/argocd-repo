@@ -38,7 +38,7 @@ config:
   # Kafka Ayarları
   kafka:
     # Kafka şifreli ise 'true', değilse 'false'. ConfigMap içeriğini değiştirir.
-    securityEnabled: true # Örnek ConfigMap'te secure ayarlar var.
+    securityEnabled: false # Örnek ConfigMap'te secure ayarlar var.
     secure:
       # VAULT YOLLARI GÜNCELLENDİ
       bootstrapservers: "<path:xhcp-test-alertservice/data/values/#configKafkaSecureBootstrapservers>"

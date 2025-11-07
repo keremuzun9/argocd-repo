@@ -2,7 +2,7 @@
 
 global:
   # Kubernetes Namespace'i (Örnek: yf-xhcp-test'e göre güncellendi)
-  namespace: yf-xhcp-test
+  namespace: xhcp
   # Deployment, Service, Label ve Selector adı
   appName: tradesoft-xhcp-alertservice
   # ConfigMap adı ve volumeMount subPath'i için kullanılan prefix (yf-config-test'e göre güncellendi)

@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  # helper.tpl'den gelen dinamik ad: tradesoft-xhcp-alertservice-appsettings
+  name: {{ include "alertservice.configMapName" . }}
+  namespace: {{ .Values.global.namespace }}
+data:
+  # subPath adı: tradesoft-xhcp-alertservice-appsettings.k8s.json
+  {{ .Values.global.appPrefix }}-alertservice-appsettings.k8s.json: |
+    {
+      "Serilog": {
+        "MinimumLevel": {
+          "Default": "Information",
+          "Override": {
+            "Microsoft": "Warning",
+            "System": "Warning",
+            "Microsoft.AspNetCore.HttpLogging": "Information",
+            "Microsoft.AspNetCore.Hosting.Diagnostics": "Warning",
+            "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
+            "Microsoft.AspNetCore.Routing": "Warning"
+          }
+        }
+      },
+      "RbApiClient": {
+        "URL": "http://haproxy.common:8080/RBApi/"
+      },
+      "IdentityServerOptions": {
+        "URL": "https://authio.tradesoft.com.tr",
+        "Client": "xhcp.public",
+        "ClientSecret": "68ea7e67df524a3abc565c05ec3dd943",
+        "GrantType": "client_credentials"
+      },
+      "PriceWebSocket": {
+        "URL": "wss://io.tradesoft.com.tr/pricewslive/live"
+      },
+      "WebSocketSettings": {
+        "LiveUrl": "wss://io.tradesoft.com.tr/pricewslive/live",
+        "DelayedUrl": "wss://io.tradesoft.com.tr/pricewsdelayed/delayed",
+        "IndexUrl": "wss://io.tradesoft.com.tr/pricewsindex/index",
+        "WarrantUrl": "wss://io.tradesoft.com.tr/pricewswarrant/warrant"
+      },
+      "NotificationAPIClientSettings": {
+        "Name": "NotificationAPIClient",
+        "Url": "http://fiba-mobil-notificationapi/"
+      },
+      "DataSourceConfig": {
+        "Source": "Altibase"
+      },
+      "MssqlDbConfig": {
+        "ConnectionString": "Application Name=xHCP.Conn.Mssql.Test;data source=10.0.155.5;initial catalog=gtpbrdbtsdev;user id=10.0.155.5;Password=10.0.155.5;persist security info=True;"
+      },
+      "AltibaseDbConfig": {
+        "ConnectionString": "DSN=altibase.common;uid=XMOBILE;pwd=XMOBILE;NLS_USE=UTF8;PORT=20300;Pooling=true;ConnectionLifetime=15;",
+        "InitialCatalog": "XMOBILE",
+        "CacheEnvironment": "X"
+      },
+      
+      {{- if .Values.config.kafka.securityEnabled -}}
+      "KafkaProducer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "groupid": "xHCP.fiba-mobil-alertservice",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true,
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      {{- else -}}
+      "KafkaProducer": {
+        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}",
+        "groupid": "xHCP.Alert.Service",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true
+      },
+      {{- end -}}
+      
+      "Redis": { 
+        "Host": {{ include "alertservice.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }},
+        "Port": {{ .Values.config.redis.port }},
+        "Password": "{{ .Values.config.redis.password }}",
+        "AllowAdmin": {{ .Values.config.redis.allowAdmin }},
+        "ClientName": "{{ .Values.config.redis.clientName }}",
+        "ReconnectRetryPolicy": {{ .Values.config.redis.reconnectRetryPolicy }},
+        "AbortOnConnectFail": {{ .Values.config.redis.abortOnConnectFail }},
+        "Configuration": {{ printf "%s:%s,connectTimeout=10000,syncTimeout=10000" 
+                             (include "alertservice.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix))
+                             (.Values.config.redis.port | toString) | quote }}
+      },
+      "Logging": {
+        "ELK": {
+          "Enabled": {{ .Values.config.logging.elk.enabled }},
+          "Url": {{ printf "http://%s:%s@%s:9200" 
+                             .Values.config.logging.elk.username 
+                             .Values.config.logging.elk.password 
+                             (include "alertservice.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
+          "Username": "{{ .Values.config.logging.elk.username }}",
+          "Password": "{{ .Values.config.logging.elk.password }}"
+        },
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      }
+    }

@@ -19,6 +19,7 @@ spec:
       maxUnavailable: 25%
     type: RollingUpdate
   template:
+    metadata:
       labels:
         app: {{ .Values.global.appName }}
     spec:

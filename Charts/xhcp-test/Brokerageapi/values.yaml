@@ -27,24 +27,24 @@ config:
       host: elasticsearch 
       username: elastic
       # VAULT YOLU
-      password: "<path:fiba-matriks-brokerageapi/data/values/#loggingElkPassword>" 
+      password: "<path:xhcp-test/data/values/#loggingElkPassword>"  
       
   kafka:
     # ConfigMap'teki Kafka ayarları secure
     securityEnabled: true
     secure:
       # VAULT YOLLARI
-      bootstrapservers: "<path:fiba-matriks-brokerageapi/data/values/#configKafkaSecureBootstrapservers>"
-      saslpassword: "<path:fiba-matriks-brokerageapi/data/values/#configKafkaSecureSaslpassword>" 
-      saslusername: "fiba-test-user"
+      bootstrapservers: "<path:xhcp-test/data/values/#configKafkaSecureBootstrapservers>"
+      saslpassword: "<path:xhcp-test/data/values/#configKafkaSecureSaslpassword>" 
+      saslusername: "<path:xhcp-test/data/values/#configKafkaSecureSaslusername>"
     insecure: 
-      bootstrapservers: "<path:fiba-matriks-brokerageapi/data/values/#configKafkaInsecureBootstrapservers>"
+      bootstrapservers: "<path:xhcp-test/data/values/#configKafkaInsecureBootstrapservers>"
 
   redis:
     host: haproxy
     port: 6379
     # VAULT YOLU
-    password: "<path:fiba-matriks-brokerageapi/data/values/#redisPassword>" 
+    password: "<path:xhcp-test/data/values/#redisPassword>" 
 
 resources:
   limits:
@@ -56,4 +56,4 @@ resources:
 
 ingress:
   enabled: true
-  host: testxhcp.tradesoft.com.tr
+  host: "<path:xhcp-test/data/values/#ingressHost>"

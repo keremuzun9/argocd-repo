@@ -4,9 +4,9 @@ global:
   # Kubernetes Namespace'i
   namespace: xhcp
   # Deployment, Service, Label ve Selector adı
-  appName: xhcp-test-alertapi
+  appName: tradesoft-xhcp-alertapi
   # ConfigMap adı ve volumeMount subPath'i için kullanılan prefix
-  appPrefix: xhcp-test
+  appPrefix: tradesoft-xhcp
   # Ortak Altyapı Servisleri için Domain Soneki (Boş bırakılabilir)
   commonSuffix: stack
 

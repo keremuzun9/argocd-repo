@@ -1,0 +1,57 @@
+global:
+  namespace: xhcp
+  appName: tradesoft-xhcp-cmsapi
+  appPrefix: tradesoft-xhcp
+  commonSuffix: common
+
+replicaCount: 1 
+
+image:
+  repository: io.tradesoft.com.tr/xhcp/cmsapi # Image repository güncellendi
+  tag: dev 
+  pullPolicy: Always
+
+config:
+  # ENV değişkenleri için referans alınan Ortak ConfigMap Adı
+  configMapKeyRefName: xhcp-config-test # Ortak ConfigMap adı
+  
+  # ----------------------------------------------------
+  # ConfigMap İçindeki Değişkenler (Vault/Ortam Bağımlı)
+  # ----------------------------------------------------
+  
+  logging:
+    elk:
+      enabled: true
+      host: elasticsearch 
+      username: elastic
+      # VAULT YOLU (cmsapi'ye uyarlandı)
+      password: "<path:xhcp-test/data/values/#loggingElkPassword>"
+      
+  kafka:
+    securityEnabled: true
+    secure:
+      # VAULT YOLLARI (cmsapi'ye uyarlandı)
+      bootstrapservers: "<path:xhcp-test/data/values/#configKafkaSecureBootstrapservers>"
+      saslpassword: "<path:xhcp-test/data/values/#configKafkaSecureSaslpassword>" 
+      saslusername: "<path:xhcp-test/data/values/#configKafkaSecureSaslusername>"
+    insecure: 
+      bootstrapservers: "<path:xhcp-test/data/values/#configKafkaInsecureBootstrapservers>"
+
+  redis:
+    host: haproxy
+    port: 6379
+    # VAULT YOLU (cmsapi'ye uyarlandı)
+    password: "<path:xhcp-test/data/values/#redisPassword>" 
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 512Mi
+  requests:
+    cpu: 20m
+    memory: 128Mi
+
+ingress:
+  enabled: true
+  # Host adresi güncellendi
+  host: "<path:xhcp-test/data/values/#ingressHost>"

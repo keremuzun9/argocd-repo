@@ -41,7 +41,7 @@ data:
       },
       "NotificationAPIClientSettings": {
         "Name": "NotificationAPIClient",
-        "Url": "http://fiba-mobil-notificationapi/"
+        "Url": "http:///"
       },
       "DataSourceConfig": {
         "Source": "Altibase"

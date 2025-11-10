@@ -1,5 +1,5 @@
 {{- define "brokerageapi.configMapName" -}}
-{{ .Values.global.appName }}-brokerageapi-appsettings
+{{ .Values.global.appPrefix }}-brokerageapi-appsettings
 {{- end -}}
 
 {{- define "brokerageapi.fullHostName" -}}

@@ -50,7 +50,7 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: Logging__ELK__Username
-              name: {{ .Values.global.ConfigMapRefName }}
+              name: {{ .Values.global.configMapRefName }}
         - name: Logging__ELK__Password
           valueFrom:
             configMapKeyRef:

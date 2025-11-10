@@ -63,9 +63,9 @@ data:
         "Key": "426d45f6-6ce6-4684-a437-2eeb94ebefcb"
       },
       "IdentityServer": {
-        "Uri": "http://fiba-matriks-identityserver",
-        "ClientId": "fiba.xhcp",
-        "ClientSecret": "659a45d11e0243a3b99d49aa5ff34b50"
+        "Uri": "http://",
+        "ClientId": "",
+        "ClientSecret": ""
       },
       "PDApiClientSettings": {
         "URL": "https://io.tradesoft.com.tr/price/"

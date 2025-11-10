@@ -1,0 +1,176 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.global.appName }}
+    k8slens-edit-resource-version: v1
+  name: {{ .Values.global.appName }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  progressDeadlineSeconds: 600
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: {{ .Values.global.appName }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2025-08-01T08:15:52Z"
+      creationTimestamp: null
+      labels:
+        app: {{ .Values.global.appName }}
+    spec:
+      containers:
+      - env:
+        - name: ASPNETCORE_URLS
+          value: http://+:80
+        # 🚨 TÜM ENV'ler Ortak ConfigMap'i referans alır (fiba-matriks-config-test)
+        - name: RbApiClient__URL
+          valueFrom:
+            configMapKeyRef:
+              key: RbApiClient__URL
+              name: {{ .Values.config.configMapKeyRefName }}
+        - name: Logging__ELK__Enabled
+          valueFrom:
+            configMapKeyRef:
+              key: Logging__ELK__Enabled
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: Logging__ELK__Url
+          valueFrom:
+            configMapKeyRef:
+              key: Logging__ELK__Url
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: Logging__ELK__Username
+          valueFrom:
+            configMapKeyRef:
+              key: Logging__ELK__Username
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: Logging__ELK__Password
+          valueFrom:
+            configMapKeyRef:
+              key: Logging__ELK__Password
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: Company
+          valueFrom:
+            configMapKeyRef:
+              key: Company
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: DataSourceConfig__Source
+          valueFrom:
+            configMapKeyRef:
+              key: DataSourceConfig__Source
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: IdentityServer__Uri
+          valueFrom:
+            configMapKeyRef:
+              key: IdentityServer__Uri
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: PDApiClientSettings__URL
+          valueFrom:
+            configMapKeyRef:
+              key: PDApiClientSettings__URL
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: Redis__Host
+          valueFrom:
+            configMapKeyRef:
+              key: Redis__Host
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: Redis__Port
+          valueFrom:
+            configMapKeyRef:
+              key: Redis__Port
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: Redis__Password
+          valueFrom:
+            configMapKeyRef:
+              key: Redis__Password
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: Redis__DbId
+          valueFrom:
+            configMapKeyRef:
+              key: Redis__DbId
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: Redis__Configuration
+          valueFrom:
+            configMapKeyRef:
+              key: Redis__Configuration
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: KafkaProducer__bootstrapservers
+          valueFrom:
+            configMapKeyRef:
+              key: KafkaProducer__bootstrapservers
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: KafkaConsumer__bootstrapservers
+          valueFrom:
+            configMapKeyRef:
+              key: KafkaConsumer__bootstrapservers
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: MssqlDbConfig__ConnectionString
+          valueFrom:
+            configMapKeyRef:
+              key: MssqlDbConfig__ConnectionString
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: AltibaseDbConfig__ConnectionString
+          valueFrom:
+            configMapKeyRef:
+              key: AltibaseDbConfig__ConnectionString
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: ReportApiSettings
+          valueFrom:
+            configMapKeyRef:
+              key: ReportApiSettings
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: ReportApiSettings__URL
+          valueFrom:
+            configMapKeyRef:
+              key: ReportApiSettings__URL
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: ConnectionStrings__DbContext
+          valueFrom:
+            configMapKeyRef:
+              key: ConnectionStrings__DbContext
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        - name: DataSource
+          valueFrom:
+            configMapKeyRef:
+              key: DataSource
+              name: {{ .Values.global.ConfigMapRefName" . }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        name: {{ .Values.global.appName }}
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources:
+          limits:
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        # Kendi ConfigMap'ini mount eder (fiba-matriks-brokerageapi-appsettings)
+        - mountPath: /app/appsettings.json
+          name: config-vol
+          readOnly: true
+          subPath: {{ .Values.global.appPrefix }}-alertservice-appsettings.k8s.json
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: nexus2
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          # Kendi ConfigMap Adı
+          name: {{ include "brokerageapi.configMapName" . }}
+        name: config-vol

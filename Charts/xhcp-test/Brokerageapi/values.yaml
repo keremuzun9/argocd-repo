@@ -1,0 +1,59 @@
+# fiba-matriks-brokerageapi/values.yaml
+
+global:
+  namespace: xhcp
+  appName: tradesoft-xhcp-brokerageapi
+  appPrefix: tradesoft-xhcp
+  commonSuffix: common
+
+replicaCount: 1 
+
+image:
+  repository: io.tradesoft.com.tr/xhcp/brokerageapi
+  tag: dev 
+  pullPolicy: Always
+
+config:
+  # ENV değişkenleri için referans alınan Ortak ConfigMap Adı
+  configMapKeyRefName: xhcp-config-test 
+  
+  # ----------------------------------------------------
+  # ConfigMap İçindeki Değişkenler (Vault/Ortam Bağımlı)
+  # ----------------------------------------------------
+  
+  logging:
+    elk:
+      enabled: true
+      host: elasticsearch 
+      username: elastic
+      # VAULT YOLU
+      password: "<path:fiba-matriks-brokerageapi/data/values/#loggingElkPassword>" 
+      
+  kafka:
+    # ConfigMap'teki Kafka ayarları secure
+    securityEnabled: true
+    secure:
+      # VAULT YOLLARI
+      bootstrapservers: "<path:fiba-matriks-brokerageapi/data/values/#configKafkaSecureBootstrapservers>"
+      saslpassword: "<path:fiba-matriks-brokerageapi/data/values/#configKafkaSecureSaslpassword>" 
+      saslusername: "fiba-test-user"
+    insecure: 
+      bootstrapservers: "<path:fiba-matriks-brokerageapi/data/values/#configKafkaInsecureBootstrapservers>"
+
+  redis:
+    host: haproxy
+    port: 6379
+    # VAULT YOLU
+    password: "<path:fiba-matriks-brokerageapi/data/values/#redisPassword>" 
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 512Mi
+  requests:
+    cpu: 20m
+    memory: 128Mi
+
+ingress:
+  enabled: true
+  host: testxhcp.tradesoft.com.tr

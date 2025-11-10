@@ -1,0 +1,12 @@
+# alertapi/Chart.yaml
+apiVersion: v2 # Helm 3 için kullanılan API versiyonu
+name: alertapi # Chart adı (Global appName ile karıştırılmamalı)
+description: xHCP Test Brokerageapi API mikroservisi için Helm Chart
+type: application
+version: 0.1.0 # Chart'ın versiyonu (İlk versiyon)
+appVersion: "1.0.0" # Uygulamanın/imajın versiyonu (Opsiyonel)
+keywords:
+  - xHCP
+  - test
+  - alertapi
+  - microservice

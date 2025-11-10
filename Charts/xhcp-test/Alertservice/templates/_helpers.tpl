@@ -1,13 +1,13 @@
 {{- define "alertservice.configMapName" -}}
-{{- printf "%s-%s" .Values.global.appName "appsettings" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{- define "alertservice.envConfigMapRefName" -}}
-{{- .Values.config.configMapKeyRefName | trunc 63 | trimSuffix "-" -}}
+{{ .Values.global.appName }}-alertservice-appsettings
 {{- end -}}
 
 {{- define "alertservice.fullHostName" -}}
-{{- $serviceName := .serviceName -}}
-{{- $suffix := .suffix -}}
-{{- printf "%s.%s" $serviceName $suffix -}}
+{{- $serviceName := default "" .serviceName -}}
+{{- $suffix := default "" .suffix | trimSuffix "." -}}
+{{- if $suffix -}}
+{{- printf "%s.%s" $serviceName $suffix | trim -}}
+{{- else -}}
+{{- $serviceName | trim -}}
+{{- end -}}
 {{- end -}}

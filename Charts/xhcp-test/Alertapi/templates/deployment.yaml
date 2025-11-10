@@ -136,6 +136,16 @@ spec:
                 configMapKeyRef:
                   key: ReportApiSettings__URL
                   name: {{ .Values.config.configMapKeyRefName }}
+            - name: ConnectionStrings__DbContext
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.config.configMapKeyRefName }}
+                  key: ConnectionStrings__DbContext
+            - name: DataSource
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.config.configMapKeyRefName }}
+                  key: DataSource
 
           ports:
             - containerPort: 80

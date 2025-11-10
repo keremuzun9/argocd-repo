@@ -63,5 +63,4 @@ resources:
 # Ingress Ayarları
 ingress:
   enabled: true
-  host: "<path:xhcp-test-alertapi/data/values/#ingressHost>" 
-  rewriteTarget: /$2
+  host: "<path:xhcp-test-alertapi/data/values/#ingressHost>"

@@ -1,6 +1,6 @@
 global:
   namespace: xhcp
-  appName: tradesoft-xhcp-test # Uygulama adı güncellendi
+  appName: tradesoft-xhcp-cashapi # Uygulama adı güncellendi
   appPrefix: tradesoft-xhcp
   commonSuffix: common
 

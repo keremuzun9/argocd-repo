@@ -40,107 +40,107 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: Logging__ELK__Enabled
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Logging__ELK__Url
           valueFrom:
             configMapKeyRef:
               key: Logging__ELK__Url
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Logging__ELK__Username
           valueFrom:
             configMapKeyRef:
               key: Logging__ELK__Username
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.global.ConfigMapRefName }}
         - name: Logging__ELK__Password
           valueFrom:
             configMapKeyRef:
               key: Logging__ELK__Password
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Company
           valueFrom:
             configMapKeyRef:
               key: Company
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: DataSourceConfig__Source
           valueFrom:
             configMapKeyRef:
               key: DataSourceConfig__Source
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: IdentityServer__Uri
           valueFrom:
             configMapKeyRef:
               key: IdentityServer__Uri
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: PDApiClientSettings__URL
           valueFrom:
             configMapKeyRef:
               key: PDApiClientSettings__URL
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Redis__Host
           valueFrom:
             configMapKeyRef:
               key: Redis__Host
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Redis__Port
           valueFrom:
             configMapKeyRef:
               key: Redis__Port
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Redis__Password
           valueFrom:
             configMapKeyRef:
               key: Redis__Password
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Redis__DbId
           valueFrom:
             configMapKeyRef:
               key: Redis__DbId
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Redis__Configuration
           valueFrom:
             configMapKeyRef:
               key: Redis__Configuration
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: KafkaProducer__bootstrapservers
           valueFrom:
             configMapKeyRef:
               key: KafkaProducer__bootstrapservers
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: KafkaConsumer__bootstrapservers
           valueFrom:
             configMapKeyRef:
               key: KafkaConsumer__bootstrapservers
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: MssqlDbConfig__ConnectionString
           valueFrom:
             configMapKeyRef:
               key: MssqlDbConfig__ConnectionString
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: AltibaseDbConfig__ConnectionString
           valueFrom:
             configMapKeyRef:
               key: AltibaseDbConfig__ConnectionString
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: ReportApiSettings
           valueFrom:
             configMapKeyRef:
               key: ReportApiSettings
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: ReportApiSettings__URL
           valueFrom:
             configMapKeyRef:
               key: ReportApiSettings__URL
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: ConnectionStrings__DbContext
           valueFrom:
             configMapKeyRef:
               key: ConnectionStrings__DbContext
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: DataSource
           valueFrom:
             configMapKeyRef:
               key: DataSource
-              name: {{ .Values.global.ConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: {{ .Values.global.appName }}

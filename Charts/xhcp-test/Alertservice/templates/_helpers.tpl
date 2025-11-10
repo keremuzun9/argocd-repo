@@ -1,5 +1,5 @@
 {{- define "alertservice.configMapName" -}}
-{{ .Values.global.appName }}-alertservice-appsettings
+{{ .Values.global.appPrefix }}-alertservice-appsettings
 {{- end -}}
 
 {{- define "alertservice.fullHostName" -}}

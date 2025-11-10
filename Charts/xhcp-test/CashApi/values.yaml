@@ -28,7 +28,7 @@ config:
       password: "<path:xhcp-test/data/values/#loggingElkPassword>"
       
   kafka:
-    securityEnabled: true
+    securityEnabled: false
     secure:
       # VAULT YOLLARI (cashapi'ye uyarlandı)
       bootstrapservers: "<path:xhcp-test/data/values/#configKafkaSecureBootstrapservers>"

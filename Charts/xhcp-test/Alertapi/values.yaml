@@ -37,7 +37,7 @@ config:
   # Kafka Ayarları
   kafka:
     # Kafka şifreli ise 'true', değilse 'false'. ConfigMap içeriğini değiştirir.
-    securityEnabled: false 
+    securityEnabled: "<path:xhcp-test-alertapi/data/values/#configKafkaSecurityEnabled>" 
     secure:
       bootstrapservers: "<path:xhcp-test-alertapi/data/values/#configKafkaSecureBootstrapservers>"
       saslpassword: "<path:xhcp-test-alertapi/data/values/#configKafkaSecureSaslpassword>" 

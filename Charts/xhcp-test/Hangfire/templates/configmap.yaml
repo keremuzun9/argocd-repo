@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "hangfire.configMapName" . }}
+  namespace: {{ .Values.global.namespace }}
+data:
+  {{ .Values.global.appPrefix }}-hangfire-appsettings.k8s.json: |
+    {
+        "ElasticSearch": {
+            "Urls": {{ printf "http://%s:%s@%s:9200" 
+                                 .Values.config.logging.elk.username 
+                                 .Values.config.logging.elk.password 
+                                 (include "hangfire.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
+            "Username": "{{ .Values.config.logging.elk.username }}",
+            "Password": "{{ .Values.config.logging.elk.username }}"
+        },
+        "IdentityServer": {
+            "Uri": "http://",
+            "ClientId": "",
+            "ClientSecret": ""
+        },
+        "DataSourceConfig": {
+            "Source": "Altibase"
+        },
+        "Logging": {
+            "ELK": {
+                "Enabled": {{ .Values.config.logging.elk.enabled }},
+                "Url": {{ printf "http://%s:%s@%s:9200" 
+                                 .Values.config.logging.elk.username 
+                                 .Values.config.logging.elk.password 
+                                 (include "hangfire.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
+                "Username": "{{ .Values.config.logging.elk.username }}",
+                "Password": "{{ .Values.config.logging.elk.password }}"
+            },
+            "LogLevel": {
+                "Default": "Information",
+                "Microsoft": "Warning",
+                "Microsoft.Hosting.Lifetime": "Information"
+            }
+        },
+        "Serilog": {
+            "MinimumLevel": {
+                "Default": "Information",
+                "Override": {
+                    "Microsoft": "Warning",
+                    "System": "Warning",
+                    "Microsoft.AspNetCore.HttpLogging": "Information",
+                    "Microsoft.AspNetCore.Hosting.Diagnostics": "Warning",
+                    "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
+                    "Microsoft.AspNetCore.Routing": "Warning"
+                }
+            }
+        },
+        "Redis": {
+            "Host": {{ include "hangfire.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }},
+            "Port": {{ .Values.config.redis.port }},
+            "Password": "{{ .Values.config.redis.password }}",
+            "AllowAdmin": false,
+            "ClientName": "Hangfire",
+            "ReconnectRetryPolicy": 5000,
+            "AbortOnConnectFail": false
+        },
+        "RedisLoginHistory": {
+            "Name": "RedisLoginHistory",
+            "Host": {{ include "hangfire.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }},
+            "Port": {{ .Values.config.redis.port }},
+            "Password": "{{ .Values.config.redis.password }}",
+            "AllowAdmin": false,
+            "ClientName": "Backoffice",
+            "ReconnectRetryPolicy": 5000,
+            "AbortOnConnectFail": false
+        },
+      {{- if .Values.config.kafka.securityEnabled -}}
+      "KafkaProducer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "groupid": "xHCP.tradesoft-xhcp-hangfire",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true,
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      {{- else -}}
+      "KafkaProducer": {
+        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}",
+        "groupid": "xHCP.tradesoft-xhcp-hangfire",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true
+      },
+      {{- end }}
+        "MssqlDbConfig": {
+            "ConnectionString": "Application Name=xHCP.Conn.Mssql.Test;data source=10.0.155.5;initial catalog=gtpbrdbtsdev;user id=GTPDB;Password=GTPDB;persist security info=True;"
+        },
+        "AltibaseDbConfig": {
+            "ConnectionString": "DSN=altibase.common;uid=XMOBILE;pwd=XMOBILE;NLS_USE=UTF8;PORT=20300;Pooling=true;ConnectionLifetime=15;",
+            "InitialCatalog": "XMOBILE",
+            "CacheEnvironment": "X"
+        },
+        "AllowedHosts": "*",
+        "VirtualDirectory": "/hangfire",
+        "RbApiClient": {
+            "URL": ""
+        }
+    }

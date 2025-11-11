@@ -1,0 +1,60 @@
+global:
+  namespace: xhcp
+  appName: fiba-matriks-hangfire
+  appPrefix: tradesoft-xhcp
+  commonSuffix: common
+
+replicaCount: 1 
+
+image:
+  repository: io.tradesoft.com.tr/xhcp/hangfire 
+  tag: dev 
+  pullPolicy: Always
+
+config:
+  configMapKeyRefName: xhcp-config-test 
+  
+  # ----------------------------------------------------
+  # ConfigMap İçindeki Değişkenler (Vault/Ortam Bağımlı)
+  # ----------------------------------------------------
+  
+  logging:
+    elk:
+      enabled: true
+      host: elasticsearch 
+      username: elastic
+      # VAULT YOLU
+      password: "<path:xhcp-hangfire/data/values/#loggingElkPassword>"
+      
+  # ELK ile aynı bilgileri içeren ElasticSearch bloğu için.
+  elasticsearch:
+    urls: "http://elastic:wVuWv6oN1gcT=MS6iB-M@elasticsearch.common:9200" # Statik bırakıldı
+    username: elastic
+    password: "wVuWv6oN1gcT=MS6iB-M"
+    
+  kafka:
+    securityEnabled: true
+    secure:
+      # VAULT YOLLARI
+      bootstrapservers: "<path:xhcp-hangfire/data/values/#configKafkaSecureBootstrapservers>"
+      saslpassword: "<path:xhcp-hangfire/data/values/#configKafkaSecureSaslpassword>" 
+      saslusername: "<path:xhcp-hangfire/data/values/#configKafkaSecureSaslusername>"
+    insecure: 
+      bootstrapservers: "<path:xhcp-hangfire/data/values/#configKafkaInsecureBootstrapservers>"
+
+  redis:
+    host: haproxy
+    port: 6379
+    password: "<path:xhcp-hangfire/data/values/#redisPassword>" 
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 512Mi
+  requests:
+    cpu: 20m
+    memory: 128Mi 
+
+ingress:
+  enabled: true
+  host: "<path:xhcp-test/data/values/#ingressHost>"

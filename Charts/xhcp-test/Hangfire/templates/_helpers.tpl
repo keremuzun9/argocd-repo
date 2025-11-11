@@ -1,0 +1,13 @@
+{{- define "hangfire.configMapName" -}}
+{{ .Values.global.appName }}-appsettings
+{{- end -}}
+
+{{- define "hangfire.fullHostName" -}}
+{{- $serviceName := default "" .serviceName -}}
+{{- $suffix := default "" .suffix | trimSuffix "." -}}
+{{- if $suffix -}}
+{{- printf "%s.%s" $serviceName $suffix | trim -}}
+{{- else -}}
+{{- $serviceName | trim -}}
+{{- end -}}
+{{- end -}}

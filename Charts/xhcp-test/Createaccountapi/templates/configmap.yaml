@@ -69,7 +69,7 @@ data:
         "Name": "NotificationAPIClient",
         "Url": "http://tradesoft-xhcp-notification"
       },
-      "ReportApiSettings": { 
+      "ReportApiSettings": {
         "Name": "ReportApiClient",
         "URL": "http://haproxy:8080/ReportApiTest/"
       },

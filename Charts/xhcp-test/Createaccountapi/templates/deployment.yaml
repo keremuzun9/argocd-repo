@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   labels:
     app: {{ .Values.global.appName }}
+    k8slens-edit-resource-version: v1
   name: {{ .Values.global.appName }}
   namespace: {{ .Values.global.namespace }}
 spec:
@@ -30,119 +31,117 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: RbApiClient__URL
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Logging__ELK__Enabled
           valueFrom:
             configMapKeyRef:
               key: Logging__ELK__Enabled
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Logging__ELK__Url
           valueFrom:
             configMapKeyRef:
               key: Logging__ELK__Url
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Logging__ELK__Username
           valueFrom:
             configMapKeyRef:
               key: Logging__ELK__Username
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Logging__ELK__Password
           valueFrom:
             configMapKeyRef:
               key: Logging__ELK__Password
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Company
           valueFrom:
             configMapKeyRef:
               key: Company
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: DataSourceConfig__Source
           valueFrom:
             configMapKeyRef:
               key: DataSourceConfig__Source
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: IdentityServer__Uri
           valueFrom:
             configMapKeyRef:
               key: IdentityServer__Uri
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: PDApiClientSettings__URL
           valueFrom:
             configMapKeyRef:
               key: PDApiClientSettings__URL
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Redis__Host
           valueFrom:
             configMapKeyRef:
               key: Redis__Host
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Redis__Port
           valueFrom:
             configMapKeyRef:
               key: Redis__Port
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Redis__Password
           valueFrom:
             configMapKeyRef:
               key: Redis__Password
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Redis__DbId
           valueFrom:
             configMapKeyRef:
               key: Redis__DbId
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: Redis__Configuration
           valueFrom:
             configMapKeyRef:
               key: Redis__Configuration
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: KafkaProducer__bootstrapservers
           valueFrom:
             configMapKeyRef:
               key: KafkaProducer__bootstrapservers
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: KafkaConsumer__bootstrapservers
           valueFrom:
             configMapKeyRef:
               key: KafkaConsumer__bootstrapservers
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: MssqlDbConfig__ConnectionString
           valueFrom:
             configMapKeyRef:
               key: MssqlDbConfig__ConnectionString
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: AltibaseDbConfig__ConnectionString
           valueFrom:
             configMapKeyRef:
               key: AltibaseDbConfig__ConnectionString
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: ReportApiSettings
           valueFrom:
             configMapKeyRef:
               key: ReportApiSettings
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: ReportApiSettings__URL
           valueFrom:
             configMapKeyRef:
               key: ReportApiSettings__URL
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: ConnectionStrings__DbContext
           valueFrom:
             configMapKeyRef:
               key: ConnectionStrings__DbContext
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         - name: DataSource
           valueFrom:
             configMapKeyRef:
               key: DataSource
-              name: {{ include "createaccountapi.envConfigMapRefName" . }}
+              name: {{ .Values.config.configMapKeyRefName }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: {{ .Values.global.appName }}
         ports:
         - containerPort: 80
-          protocol: TCP
-        - containerPort: 443
           protocol: TCP
         resources:
           limits:
@@ -157,7 +156,7 @@ spec:
         - mountPath: /app/appsettings.json
           name: config-vol
           readOnly: true
-          subPath: {{ .Values.global.appPrefix }}-createaccountapi-appsettings.k8s.json
+          subPath: {{ .Values.global.appPrefix }}-contractapi-appsettings.k8s.json
       dnsPolicy: ClusterFirst
       imagePullSecrets:
       - name: nexus2
@@ -167,5 +166,5 @@ spec:
       volumes:
       - configMap:
           defaultMode: 420
-          name: {{ include "createaccountapi.configMapName" . }}
+          name: {{ include "contractapi.configMapName" . }}
         name: config-vol

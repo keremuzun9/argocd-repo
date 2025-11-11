@@ -1,5 +1,3 @@
-# fiba-matriks-brokerageapi/values.yaml
-
 global:
   namespace: xhcp
   appName: tradesoft-xhcp-brokerageapi
@@ -11,7 +9,7 @@ replicaCount: 1
 image:
   repository: io.tradesoft.com.tr/xhcp/brokerageapi
   tag: dev 
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
 
 config:
   # ENV değişkenleri için referans alınan Ortak ConfigMap Adı

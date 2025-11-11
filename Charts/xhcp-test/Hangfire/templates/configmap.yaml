@@ -12,7 +12,7 @@ data:
                                  .Values.config.logging.elk.password 
                                  (include "hangfire.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
             "Username": "{{ .Values.config.logging.elk.username }}",
-            "Password": "{{ .Values.config.logging.elk.username }}"
+            "Password": "{{ .Values.config.logging.elk.password }}"
         },
         "IdentityServer": {
             "Uri": "http://",

@@ -1,0 +1,52 @@
+global:
+  namespace: xhcp
+  appName: tradesoft-xhcp-fundapi 
+  appPrefix: tradesoft-xhcp
+  commonSuffix: common
+
+replicaCount: 1 
+
+image:
+  repository: io.tradesoft.com.tr/xhcp/fundapi 
+  tag: dev 
+  pullPolicy: Always
+
+config:
+  configMapKeyRefName: xhcp-config-test
+  
+  # ----------------------------------------------------
+  # ConfigMap İçindeki Değişkenler (Vault/Ortam Bağımlı)
+  # ----------------------------------------------------
+  
+  logging:
+    elk:
+      enabled: true
+      host: elasticsearch 
+      username: elastic
+      password: "<path:xhcp-test/data/values/#loggingElkPassword>"
+      
+  kafka:
+    securityEnabled: true
+    secure:
+      bootstrapservers: "<path:xhcp-test/data/values/#configKafkaSecureBootstrapservers>"
+      saslpassword: "<path:xhcp-test/data/values/#configKafkaSecureSaslpassword>" 
+      saslusername: "<path:xhcp-test/data/values/#configKafkaSecureSaslusername>"
+    insecure: 
+      bootstrapservers: "<path:xhcp-test/data/values/#configKafkaInsecureBootstrapservers>"
+
+  redis:
+    host: haproxy
+    port: 6379
+    password: "<path:xhcp-test/data/values/#redisPassword>" 
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 512Mi
+  requests:
+    cpu: 20m
+    memory: 100Mi 
+
+ingress:
+  enabled: true
+  host: "<path:xhcp-test/data/values/#ingressHost>" 

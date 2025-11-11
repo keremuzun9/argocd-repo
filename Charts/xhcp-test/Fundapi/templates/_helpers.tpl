@@ -1,0 +1,14 @@
+
+{{- define "fundapi.configMapName" -}}
+{{ .Values.global.appName }}-appsettings
+{{- end -}}
+
+{{- define "fundapi.fullHostName" -}}
+{{- $serviceName := default "" .serviceName -}}
+{{- $suffix := default "" .suffix | trimSuffix "." -}}
+{{- if $suffix -}}
+{{- printf "%s.%s" $serviceName $suffix | trim -}}
+{{- else -}}
+{{- $serviceName | trim -}}
+{{- end -}}
+{{- end -}}

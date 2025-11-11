@@ -36,7 +36,7 @@ data:
           "Url": {{ printf "http://%s:%s@%s:9200" 
                              .Values.config.logging.elk.username 
                              .Values.config.logging.elk.password 
-                             .Values.config.logging.elk.host | quote }},
+                             (include "contractapi.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
           "Username": "{{ .Values.config.logging.elk.username }}",
           "Password": "{{ .Values.config.logging.elk.password }}"
         },

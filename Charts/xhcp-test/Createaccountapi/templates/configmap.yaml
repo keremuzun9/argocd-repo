@@ -81,7 +81,7 @@ data:
         "SecretKey": ""
       },
       "Redis": {
-        "Host": {{ include "contractapi.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }},
+        "Host": {{ include "createaccountapi.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }},
         "Port": {{ .Values.config.redis.port }},
         "Password": "{{ .Values.config.redis.password }}",
         "AllowAdmin": false,
@@ -89,7 +89,7 @@ data:
         "ReconnectRetryPolicy": 5000,
         "AbortOnConnectFail": false,
         "Configuration": {{ printf "%s:%s,connectTimeout=10000,syncTimeout=10000" 
-                             (include "alertservice.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix))
+                             (include "createaccountapi.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix))
                              (.Values.config.redis.port | toString) | quote }}
       },
       {{- if .Values.config.kafka.securityEnabled -}}

@@ -1,6 +1,6 @@
 global:
   namespace: xhcp
-  appName: fiba-matriks-hangfire
+  appName: tradesoft-xhcp-hangfire
   appPrefix: tradesoft-xhcp
   commonSuffix: common
 
@@ -24,28 +24,22 @@ config:
       host: elasticsearch 
       username: elastic
       # VAULT YOLU
-      password: "<path:xhcp-hangfire/data/values/#loggingElkPassword>"
-      
-  # ELK ile aynı bilgileri içeren ElasticSearch bloğu için.
-  elasticsearch:
-    urls: "http://elastic:wVuWv6oN1gcT=MS6iB-M@elasticsearch.common:9200" # Statik bırakıldı
-    username: elastic
-    password: "wVuWv6oN1gcT=MS6iB-M"
+      password: "<path:xhcp-test/data/values/#loggingElkPassword>"
     
   kafka:
-    securityEnabled: true
+    securityEnabled: false
     secure:
       # VAULT YOLLARI
-      bootstrapservers: "<path:xhcp-hangfire/data/values/#configKafkaSecureBootstrapservers>"
-      saslpassword: "<path:xhcp-hangfire/data/values/#configKafkaSecureSaslpassword>" 
-      saslusername: "<path:xhcp-hangfire/data/values/#configKafkaSecureSaslusername>"
+      bootstrapservers: "<path:xhcp-test/data/values/#configKafkaSecureBootstrapservers>"
+      saslpassword: "<path:xhcp-test/data/values/#configKafkaSecureSaslpassword>" 
+      saslusername: "<path:xhcp-test/data/values/#configKafkaSecureSaslusername>"
     insecure: 
-      bootstrapservers: "<path:xhcp-hangfire/data/values/#configKafkaInsecureBootstrapservers>"
+      bootstrapservers: "<path:xhcp-test/data/values/#configKafkaInsecureBootstrapservers>"
 
   redis:
     host: haproxy
     port: 6379
-    password: "<path:xhcp-hangfire/data/values/#redisPassword>" 
+    password: "<path:xhcp-test/data/values/#redisPassword>" 
 
 resources:
   limits:

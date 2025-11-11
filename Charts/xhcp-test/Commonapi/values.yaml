@@ -27,7 +27,7 @@ config:
       password: "<path:xhcp-test/data/values/#loggingElkPassword>"
       
   kafka:
-    securityEnabled: true
+    securityEnabled: false
     secure:
       bootstrapservers: "<path:xhcp-test/data/values/#configKafkaSecureBootstrapservers>"
       saslpassword: "<path:xhcp-test/data/values/#configKafkaSecureSaslpassword>" 

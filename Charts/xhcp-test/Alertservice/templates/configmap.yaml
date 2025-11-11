@@ -65,7 +65,7 @@ data:
       },
       "KafkaConsumer": {
         "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
-        "groupid": "xHCP.fiba-mobil-alertservice",
+        "groupid": "xHCP.tradesoft-xhcp-alertservice",
         "enableautocommit": true,
         "statisticsintervalms": 5000,
         "sessiontimeoutms": 6000,

@@ -9,7 +9,7 @@ replicaCount: 1
 image:
   repository: io.tradesoft.com.tr/xhcp/commonapi
   tag: dev 
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
 
 config:
   # ENV değişkenleri için referans alınan Ortak ConfigMap Adı

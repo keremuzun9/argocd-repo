@@ -9,7 +9,7 @@ replicaCount: 1
 image:
   repository: io.tradesoft.com.tr/xhcp/cmsapi # Image repository güncellendi
   tag: dev 
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 config:
   # ENV değişkenleri için referans alınan Ortak ConfigMap Adı

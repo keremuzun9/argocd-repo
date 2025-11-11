@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   labels:
     app: {{ .Values.global.appName }}
-    k8slens-edit-resource-version: v1
   name: {{ .Values.global.appName }}
   namespace: {{ .Values.global.namespace }}
 spec:
@@ -143,6 +142,8 @@ spec:
         ports:
         - containerPort: 80
           protocol: TCP
+        - containerPort: 443
+          protocol: TCP
         resources:
           limits:
             cpu: {{ .Values.resources.limits.cpu }}
@@ -156,7 +157,7 @@ spec:
         - mountPath: /app/appsettings.json
           name: config-vol
           readOnly: true
-          subPath: {{ .Values.global.appPrefix }}-contractapi-appsettings.k8s.json
+          subPath: {{ .Values.global.appPrefix }}-createaccountapi-appsettings.k8s.json
       dnsPolicy: ClusterFirst
       imagePullSecrets:
       - name: nexus2
@@ -166,5 +167,5 @@ spec:
       volumes:
       - configMap:
           defaultMode: 420
-          name: {{ include "contractapi.configMapName" . }}
+          name: {{ include "createaccountapi.configMapName" . }}
         name: config-vol

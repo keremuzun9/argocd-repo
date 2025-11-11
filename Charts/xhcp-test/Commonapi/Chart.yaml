@@ -1,0 +1,11 @@
+apiVersion: v2
+name: commonapi # Chart adı güncellendi
+description: xHCP Commonapi API mikroservisi için Helm Chart
+type: application
+version: 0.1.0 
+appVersion: "1.0.0" 
+keywords:
+  - xHCP
+  - test
+  - commonapi
+  - microservice

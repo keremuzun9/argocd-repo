@@ -156,6 +156,14 @@ spec:
           name: config-vol
           readOnly: true
           subPath: {{ .Values.global.appPrefix }}-identityserver-appsettings.k8s.json
+          - mountPath: /app/DeviceCheckKey.p8
+            name: config-vol-devicecheckkey
+            readOnly: true
+            subPath: DeviceCheckKey.p8
+          - mountPath: /app/google_playintegrity_auth_conf.json
+            name: config-vol-google-play
+            readOnly: true
+            subPath: google_playintegrity_auth_conf.json
       dnsPolicy: ClusterFirst
       imagePullSecrets:
       - name: nexus2
@@ -167,3 +175,11 @@ spec:
           defaultMode: 420
           name: {{ include "identityserver.configMapName" . }}
         name: config-vol
+      - configMap:
+          defaultMode: 420
+          name: devicecheckkey-config
+        name: config-vol-devicecheckkey
+      - configMap:
+          defaultMode: 420
+          name: google-play-auth-config
+        name: config-vol-google-play

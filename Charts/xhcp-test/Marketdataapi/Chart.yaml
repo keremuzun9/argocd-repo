@@ -1,0 +1,11 @@
+apiVersion: v2
+name: marketdataapi
+description: xHCP Market Data API mikroservisi için Helm Chart
+type: application
+version: 0.1.0 
+appVersion: "1.0.0" 
+keywords:
+  - xHCP
+  - fiba
+  - marketdata
+  - microservice

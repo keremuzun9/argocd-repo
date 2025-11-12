@@ -1,0 +1,153 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "messaging.configMapName" . }}
+  namespace: {{ .Values.global.namespace }}
+data:
+  {{ .Values.global.appPrefix }}-messaging-appsettings.k8s.json: |
+    {
+      "DataSourceConfig": {
+        "Source": "Altibase"
+      },
+      "RbApiClient": {
+          "URL": "http://haproxy.common:8080/RBApi/"
+        },
+      "MessagingServiceSettings": {
+        "Sms": {
+          "Provider": "DENGAGE",
+          "Enable": true
+        },
+        "Email": {
+          "Provider": "SMTP",
+          "Enable": false
+        },
+        "Notification": {
+          "Provider": "FIREBASE",
+          "Enable": true
+        }
+      },
+      "PostaGuverciniSettings": {
+        "Endpoint": "https://otpsms.postaguvercini.com/api_ws/smsservice.asmx",
+        "Username": "BTRADE11",
+        "Password": "8u7y65t",
+        "ForeignEnabled": true,
+        "ForeignEndpoint": "https://y.postaguvercini.com/api_ws/smsservice.asmx",
+        "ForeignUsername": "",
+        "ForeignPassword": ""
+      },
+      "SmartMessageSettings": {
+        "BaseAddress": "https://api.smartmessage.com",
+        "TokenPath": "identityapi/openId/user/authenticate",
+        "SmsPath": "otpmanager/transactional/sms/send",
+        "Email": "",
+        "Password": "",
+        "ClientId": "",
+        "ClientSecret": "",
+        "TransactionId": "",
+        "Operator": ""
+      },
+      "SmtpSettings": {
+        "DisplayName": "xHCP SMTP",
+        "From": "sender@xhcp.com",
+        "Username": "",
+        "Password": "",
+        "Host": "smtp-relay.sendinblue.com",
+        "Port": 587,
+        "EnableSsl": true
+      },
+      "DengageSettings": {
+        "BaseAddress": "http://10.184.194.11:9050",
+        "TokenPath": "auth/login",
+        "SmsPath": "transactional/sendSms",
+        "Username": "",
+        "Password": "",
+        "AccountId": 8,
+        "SmsTrustDay": 0,
+        "SmsType": "BULK",
+        "PoolId": 57,
+        "PreventDuplicate": true,
+        "Timeout": 10
+      },
+      {{- if .Values.config.kafka.securityEnabled -}}
+      "KafkaProducer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "groupid": "xHCP.tradesoft-xhcp-messaging",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true,
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      {{- else -}}
+      "KafkaProducer": {
+        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}",
+        "groupid": "xHCP.tradesoft-xhcp-messaging",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true
+      },
+      {{- end }}
+      "MssqlDbConfig": {
+        "ConnectionString": "Application Name=xHCP.Conn.Mssql.Test;data source=10.0.155.5;initial catalog=gtpbrdbtsdev;user id=10.0.155.5;Password=10.0.155.5;persist security info=True;"
+      },
+      "AltibaseDbConfig": {
+        "ConnectionString": "DSN=altibase.common;uid=XMOBILE;pwd=XMOBILE;NLS_USE=UTF8;PORT=20300;Pooling=true;ConnectionLifetime=15;",
+        "InitialCatalog": "XMOBILE",
+        "CacheEnvironment": "X"
+      },
+      "Logging": {
+        "ELK": {
+          "Enabled": {{ .Values.config.logging.elk.enabled }},
+          "Url": {{ printf "http://%s:%s@%s:9200" 
+                             .Values.config.logging.elk.username 
+                             .Values.config.logging.elk.password 
+                             (include "messaging.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
+          "Username": "{{ .Values.config.logging.elk.username }}",
+          "Password": "{{ .Values.config.logging.elk.password }}"
+        },
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft": "Warning",
+          "Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware": "Information"
+        }
+      },
+      "Serilog": {
+        "MinimumLevel": {
+          "Default": "Information",
+          "Override": {
+            "Microsoft": "Warning",
+            "System": "Warning",
+            "Microsoft.AspNetCore.HttpLogging": "Information",
+            "Microsoft.AspNetCore.Hosting.Diagnostics": "Warning",
+            "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
+            "Microsoft.AspNetCore.Routing": "Warning"
+          }
+        }
+      },
+      "Redis": {
+        "Host": {{ include "messaging.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }},
+        "Port": {{ .Values.config.redis.port }},
+        "Password": "{{ .Values.config.redis.password }}",
+        "AllowAdmin": false,
+        "ClientName": "Messaging",
+        "ReconnectRetryPolicy": 5000,
+        "AbortOnConnectFail": false,
+        "Configuration": {{ include "messaging.redisConfiguration" . }}
+      }
+    }

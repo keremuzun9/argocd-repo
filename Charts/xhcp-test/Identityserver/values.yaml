@@ -49,4 +49,4 @@ resources:
 
 ingress:
   enabled: true
-  host: "<path:xhcp-test/data/values/#ingressHost>"
+  host: "<path:xhcp-test/data/values/#ingressAuthHost>"

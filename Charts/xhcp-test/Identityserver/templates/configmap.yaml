@@ -111,7 +111,9 @@ data:
         "ClientName": "Identityserver",
         "ReconnectRetryPolicy": 5000,
         "AbortOnConnectFail": false,
-        "Configuration": {{ include "identityserver.redisConfiguration" . }}
+        "Configuration": {{ printf "%s:%s,connectTimeout=10000,syncTimeout=10000" 
+                             (include "identityserver.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix))
+                             (.Values.config.redis.port | toString) | quote }}
       },
       "RedisLoginHistory": {
         "Name": "RedisBackoffice",

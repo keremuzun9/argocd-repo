@@ -133,6 +133,7 @@ spec:
               name: {{ .Values.config.configMapKeyRefName }}
         - name: DataSource
           valueFrom:
+            configMapKeyRef:
               key: DataSource
               name: {{ .Values.config.configMapKeyRefName }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

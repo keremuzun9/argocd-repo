@@ -1,0 +1,43 @@
+global:
+  namespace: xhcp
+  appName: tradesoft-xhcp-pricedatareceiver
+  appPrefix: tradesoft-xhcp
+  commonSuffix: common
+
+replicaCount: 1 
+
+image:
+  repository: io.tradesoft.com.tr/xhcp/pricedatareceiver 
+  tag: dev 
+  pullPolicy: Always
+
+config:
+  configMapKeyRefName: xhcp-config-test
+  
+  # ----------------------------------------------------
+  # ConfigMap İçindeki Değişkenler (Vault/Ortam Bağımlı)
+  # ----------------------------------------------------
+  
+  logging:
+    elk:
+      enabled: true
+      host: elasticsearch 
+      username: elastic
+      password: "<path:xhcp-test/data/values/#loggingElkPassword>"
+
+  redis:
+    host: haproxy
+    port: 6379
+    password: "<path:xhcp-test/data/values/#redisPassword>"
+    
+  
+resources:
+  limits:
+    cpu: 250m
+    memory: 256Mi 
+  requests:
+    cpu: 25m 
+    memory: 128Mi 
+
+ingress:
+  enabled: false 

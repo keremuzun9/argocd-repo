@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "pricedatareceiver.configMapName" . }}
+  namespace: {{ .Values.global.namespace }}
+data:
+  {{ .Values.global.appPrefix }}-pricedatareceiver-appsettings.k8s.json: |
+    {
+      "MDM": {
+        "Connection": "tcp://:8083",
+        "PriceRequestInterval": 500
+      },
+      "RbApiClient": {
+          "URL": "http://haproxy.common:8080/RBApi/"
+        },
+      "Nats": {
+        "Host": "nats://10.0.11.29:4222",
+        "Sync": 1
+      },
+      "DataSourceConfig": {
+        "Source": "Altibase"
+      },
+      "Serilog": {
+        "MinimumLevel": {
+          "Default": "Debug"
+        }
+      },
+      "MssqlDbConfig": {
+        "ConnectionString": "Application Name=xHCP.Conn.Mssql.Test;data source=10.0.155.5;initial catalog=gtpbrdbtsdev;user id=10.0.155.5;Password=10.0.155.5;persist security info=True;"
+      },
+      "AltibaseDbConfig": {
+        "ConnectionString": "DSN=altibase.common;uid=XMOBILE;pwd=XMOBILE;NLS_USE=UTF8;PORT=20300;Pooling=true;ConnectionLifetime=15;", 
+        "InitialCatalog": "XMOBILE",
+        "CacheEnvironment": "X"
+      },
+      "Redis": {
+        "Host": {{ include "pricedatareceiver.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }},
+        "Port": {{ .Values.config.redis.port }},
+        "Password": "{{ .Values.config.redis.password }}",
+        "AllowAdmin": false,
+        "ClientName": "Pricedatareceiver",
+        "ReconnectRetryPolicy": 5000,
+        "AbortOnConnectFail": false
+      },
+      "Logging": {
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft.Hosting.Lifetime": "Information"
+        }
+      },
+      "ELK": {
+        "Enabled": {{ .Values.config.logging.elk.enabled }},
+        "Url": {{ printf "http://%s:%s@%s:9200" 
+                           .Values.config.logging.elk.username 
+                           .Values.config.logging.elk.password 
+                           (include "pricedatareceiver.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
+        "Username": "{{ .Values.config.logging.elk.username }}",
+        "Password": "{{ .Values.config.logging.elk.password }}"
+      }
+    }

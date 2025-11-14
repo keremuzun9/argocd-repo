@@ -1,0 +1,177 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "userprofileapi.configMapName" . }}
+  namespace: {{ .Values.global.namespace }}
+data:
+  {{ .Values.global.appPrefix }}-userprofileapi-appsettings.k8s.json: |
+    {
+      "ElasticSearch": {
+        "Urls": [ {{ printf "http://%s:%s@%s:9200" 
+                             .Values.config.logging.elk.username 
+                             .Values.config.logging.elk.password 
+                             .Values.config.logging.elk.host | quote }} ],
+        "Username": "{{ .Values.config.logging.elk.username }}",
+        "Password": "{{ .Values.config.logging.elk.password }}"
+      },
+      "UseClientRateLimiting": false,
+      "ClientRateLimiting": {
+        "EnableEndpointRateLimiting": true,
+        "StackBlockedRequests": false,
+        "HttpStatusCode": 429,
+        "GeneralRules": [
+          {
+            "Endpoint": "*:/api/who/*",
+            "Period": "7s",
+            "Limit": 3
+          },
+          {
+            "Endpoint": "*",
+            "Period": "1s",
+            "Limit": 50
+          }
+        ]
+      },
+      "RbApiClient": {
+          "URL": "http://haproxy:8080/RBApiTest/"
+        },
+      "Logging": {
+        "ELK": {
+          "Enabled": {{ .Values.config.logging.elk.enabled }},
+          "Url": {{ printf "http://%s:%s@%s:9200" 
+                             .Values.config.logging.elk.username 
+                             .Values.config.logging.elk.password 
+                             .Values.config.logging.elk.host | quote }},
+          "Username": "{{ .Values.config.logging.elk.username }}",
+          "Password": "{{ .Values.config.logging.elk.password }}"
+        },
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft.Hosting.Lifetime": "Information",
+          "Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware": "Information"
+        }
+      },
+      "Serilog": {
+        "MinimumLevel": {
+          "Default": "Information",
+          "Override": {
+            "Microsoft": "Warning",
+            "System": "Warning",
+            "Microsoft.AspNetCore.HttpLogging": "Information",
+            "Microsoft.AspNetCore.Hosting.Diagnostics": "Information",
+            "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
+            "Microsoft.AspNetCore.Routing": "Warning"
+          }
+        },
+        "Filter": [
+      {
+        "Name": "ByExcluding",
+        "Args": {
+          "expression": "RequestPath = '/api/User/ResetPassword' or  RequestPath = '/api/Profile/ChangePassword'"
+        }
+      }
+    ] 
+      },
+      "DataSourceConfig": {
+        "Source": "Altibase"
+      },
+      "IdentityServer": {
+        "Uri": "http://tradesoft-xhcp-identityserver"
+      },
+      "PDApiClientSettings": {
+        "URL": "https://testio.tradesoft.com.tr/price/"
+      },
+      "NotificationAPIClientSettings": {
+        "Name": "NotificationAPIClient",
+        "Url": "http://tradesoft-xhcp-notificationapi/"
+      },
+      "GlobalIYSAPISaveClientSettings": {
+        "Name": "GlobalIYSSaveAPIClient",
+        "Url": "https://www.yf.com.tr/DigitalOpt/Home/IysSave/",
+        "Username": "Tradesoft",
+        "Password": "WNuwUDCGBVNJh95c"
+      },
+      "GlobalIYSAPIGetClientSettings": {
+        "Name": "GlobalIYSGetAPIClient",
+        "Url": "https://www.yf.com.tr/DigitalOpt/Home/GetCustomerIysPrefence/",
+        "Username": "Tradesoft",
+        "Password": "WNuwUDCGBVNJh95c"
+      },
+      "GlobalIYSAPIClientSettings": {
+        "Name": "GlobalIYSAPIClient",
+        "Url": "https://www.yf.com.tr/DigitalOpt/Home/IysSave/",
+        "Username": "Tradesoft",
+        "Password": "WNuwUDCGBVNJh95c"
+      },
+      "Redis": {
+        "Host": "{{ .Values.config.redis.host }}",
+        "Port": {{ .Values.config.redis.port }},
+        "Password": {{ if .Values.config.redis.password }}"{{ .Values.config.redis.password }}"{{ else }}null{{ end }},
+        "AllowAdmin": true,
+        "ClientName": "Userprofileapi",
+        "ReconnectRetryPolicy": 5000,
+        "AbortOnConnectFail": false
+      },
+      "RedisLoginHistory": {
+        "Name": "LoginHistory",
+        "Host": "{{ .Values.config.redis.host }}", 
+        "Port": {{ .Values.config.redis.port }},
+        "Password": {{ if .Values.config.redis.password }}"{{ .Values.config.redis.password }}"{{ else }}null{{ end }},
+        "AllowAdmin": false,
+        "ClientName": "LoginHistory",
+        "ReconnectRetryPolicy": 5000,
+        "AbortOnConnectFail": false
+      },
+      {{- if .Values.config.kafka.securityEnabled -}}
+      "KafkaProducer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "groupid": "xHCP.UserProfile.API",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true,
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      {{- else -}}
+      "KafkaProducer": {
+        "bootstrapservers": "kafka-kafka-bootstrap:9092"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "kafka-kafka-bootstrap:9092", 
+        "groupid": "xHCP.UserProfile.API",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true
+      },
+      {{- end }}
+      "MssqlDbConfig": {
+        "ConnectionString": "Application Name=xHCP.Conn.Mssql.Test;data source=10.0.155.5;initial catalog=gtpbrdbtsdev;user id=GTPDB;Password=GTPDB;persist security info=True;"
+      },
+      "AltibaseDbConfig": {
+        "ConnectionString": "DSN=altibasedb;uid=XMOBILE;pwd=xmobile;NLS_USE=UTF8;PORT=20300;Pooling=true;",
+        "InitialCatalog": "XMOBILE",
+        "CacheEnvironment": "X"
+      },
+      "AllowedHosts": "*",
+      "VirtualDirectory": "",
+      "StorageSettings": {
+        "Enabled" : false,
+        "SSL": false,
+        "Endpoint": "",
+        "AccessKey": "",
+        "SecretKey": ""
+      }
+    }

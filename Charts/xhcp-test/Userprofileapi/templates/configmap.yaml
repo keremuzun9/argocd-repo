@@ -87,21 +87,21 @@ data:
       },
       "GlobalIYSAPISaveClientSettings": {
         "Name": "GlobalIYSSaveAPIClient",
-        "Url": "https://www.yf.com.tr/DigitalOpt/Home/IysSave/",
-        "Username": "Tradesoft",
-        "Password": "WNuwUDCGBVNJh95c"
+        "Url": "",
+        "Username": "",
+        "Password": ""
       },
       "GlobalIYSAPIGetClientSettings": {
         "Name": "GlobalIYSGetAPIClient",
-        "Url": "https://www.yf.com.tr/DigitalOpt/Home/GetCustomerIysPrefence/",
-        "Username": "Tradesoft",
-        "Password": "WNuwUDCGBVNJh95c"
+        "Url": "",
+        "Username": "",
+        "Password": ""
       },
       "GlobalIYSAPIClientSettings": {
         "Name": "GlobalIYSAPIClient",
-        "Url": "https://www.yf.com.tr/DigitalOpt/Home/IysSave/",
-        "Username": "Tradesoft",
-        "Password": "WNuwUDCGBVNJh95c"
+        "Url": "",
+        "Username": "",
+        "Password": ""
       },
       "Redis": {
         "Host": "{{ .Values.config.redis.host }}",

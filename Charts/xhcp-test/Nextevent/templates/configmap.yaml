@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nextevent.configMapName" . }}
+  namespace: {{ .Values.global.namespace }}
+data:
+  {{ .Values.global.appPrefix }}-nextevent-appsettings.k8s.json: |
+    {
+        "Logging": {
+            "LogLevel": {
+                "Default": "Information",
+                "Microsoft": "Warning",
+                "Microsoft.Hosting.Lifetime": "Information"
+            }
+        },
+        "Serilog": {
+            "Using": [
+                "Serilog.Sinks.Elasticsearch"
+            ],
+            "MinimumLevel": {
+                "Default": "Information",
+                "Override": {
+                    "Microsoft": "Warning",
+                    "System": "Warning",
+                    "Microsoft.AspNetCore.HttpLogging": "Information",
+                    "Microsoft.AspNetCore.Hosting.Diagnostics": "Information",
+                    "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
+                    "Microsoft.AspNetCore.Routing": "Warning"
+                }
+            },
+            "WriteTo": [{
+                    "Name": "Elasticsearch",
+                    "Args": {
+                        "nodeUris": {{ printf "http://%s:%s@%s:9200" 
+                             .Values.config.logging.elk.username 
+                             .Values.config.logging.elk.password 
+                             (include "nextevent.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
+                        "batchAction": "Create",
+                        "indexFormat": "{{ .Values.global.appName }}", 
+                        "customFormatter": "Serilog.Formatting.Elasticsearch.ElasticsearchJsonFormatter, Serilog.Formatting.Elasticsearch",
+                        "autoRegisterTemplate": true,
+                        "typeName": null,
+                        "detectElasticsearchVersion": true,
+                        "InlineFields": true
+                    }
+                }
+            ]
+        },
+        "RbApiClient": {
+            "URL": "http://"
+        },
+        {{- if .Values.config.kafka.securityEnabled -}}
+        "KafkaProducer": {
+          "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+          "saslmechanism": "ScramSha512",
+          "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+          "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+          "securityprotocol": "SaslPlaintext"
+        },
+        "KafkaConsumer": {
+          "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+          "groupid": "xHCP.tradesoft-xhcp-nextevent",
+          "enableautocommit": true,
+          "statisticsintervalms": 5000,
+          "sessiontimeoutms": 6000,
+          "autooffsetreset": 0,
+          "enablepartitioneof": true,
+          "saslmechanism": "ScramSha512",
+          "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+          "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+          "securityprotocol": "SaslPlaintext"
+        },
+        {{- else -}}
+        "KafkaProducer": {
+          "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}"
+        },
+        "KafkaConsumer": {
+          "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}",
+          "groupid": "xHCP.tradesoft-xhcp-nextevent",
+          "enableautocommit": true,
+          "statisticsintervalms": 5000,
+          "sessiontimeoutms": 6000,
+          "autooffsetreset": 0,
+          "enablepartitioneof": true
+        },
+        {{- end }}
+        "AltibaseDbConfig": {
+            "ConnectionString": "",
+            "InitialCatalog": "XMOBILE",
+            "CacheEnvironment": "X"
+        },
+        "Redis": {
+            "Host": {{ include "nextevent.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }},
+            "Port": {{ .Values.config.redis.port }},
+            "Password": {{ if .Values.config.redis.password }}"{{ .Values.config.redis.password }}"{{ else }}null{{ end }},
+            "AllowAdmin": false,
+            "ClientName": "IDM",
+            "ReconnectRetryPolicy": 5000,
+            "AbortOnConnectFail": false,
+            "Configuration": {{ include "nextevent.redisConfiguration" . }}
+        },
+        "NotificationAPIClientSettings": {
+            "Name": "NotificationAPIClient",
+            "Url": "http://tradesoft-xhcp-notificationapi/"
+        },
+        "DataSource": "Altibase",
+        "KafkaEvents": "HubAccountFlow,Dividend,RegisterUserDevice,CustomerAddress,CustomerBaseInformation"
+    }

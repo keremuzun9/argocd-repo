@@ -1,0 +1,47 @@
+global:
+  namespace: xhcp
+  appName: tradesoft-xhcp-nextevent
+  appPrefix: tradesoft-xhcp
+  commonSuffix: common
+
+replicaCount: 1
+
+image:
+  repository: io.tradesoft.com.tr/xhcp/nextevent 
+  tag: dev 
+  pullPolicy: Always
+
+config:
+  configMapKeyRefName: xhcp-config-test
+  
+  # ----------------------------------------------------
+  # ConfigMap İçindeki Değişkenler (Vault/Ortam Bağımlı)
+  # ----------------------------------------------------
+  
+  logging:
+    elk:
+      host: "<path:xhcp-test/data/values/#loggingElkHost>"
+      username: "<path:xhcp-test/data/values/#loggingElkUsername>"
+      password: "<path:xhcp-test/data/values/#loggingElkPassword>"
+      
+  kafka:
+    securityEnabled: false 
+    secure:
+      bootstrapservers: "<path:xhcp-test/data/values/#configKafkaSecureBootstrapservers>"
+      saslpassword: "<path:xhcp-test/data/values/#configKafkaSecureSaslpassword>" 
+      saslusername: "<path:xhcp-test/data/values/#configKafkaSecureSaslusername>"
+    insecure: 
+      bootstrapservers: "<path:xhcp-test/data/values/#configKafkaInsecureBootstrapservers>"
+
+  redis:
+    host: haproxy
+    port: 6379
+    password: "<path:xhcp-test/data/values/#redisPassword>"
+  
+resources:
+  limits:
+    cpu: "1"
+    memory: 1G
+  requests:
+    cpu: 20m
+    memory: 128Mi

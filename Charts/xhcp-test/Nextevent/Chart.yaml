@@ -1,0 +1,10 @@
+apiVersion: v2
+name: nextevent
+description: xHCP Next Event işleyici servisi için Helm Chart
+type: application
+version: 0.1.0 
+appVersion: "1.0.0" 
+keywords:
+  - xHCP
+  - tradesoft
+  - event

@@ -1,0 +1,20 @@
+global:
+  namespace: xhcp
+  appName: tradesoft-xhcp-vbts
+  appPrefix: tradesoft-xhcp
+  commonSuffix: common 
+
+replicaCount: 1 
+
+image:
+  repository: io.tradesoft.com.tr/xhcp/xhcpvbts 
+  tag: release
+  pullPolicy: Always
+
+ingress:
+  enabled: true
+  host: "<path:xhcp-test/data/values/#ingressHost>"
+
+service:
+  port: 8080
+  targetPort: 8080

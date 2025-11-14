@@ -17,7 +17,7 @@ spec:
               service:
                 name: {{ .Values.global.appName }}
                 port:
-                  number: {{ .Values.service.port }}
+                  number: 5000
             path: /userprofile(/|$)(.*)
             pathType: ImplementationSpecific
 {{- end }}

@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "tradewsapi.configMapName" . }}
+  namespace: {{ .Values.global.namespace }}
+data:
+  {{ .Values.global.appPrefix }}-tradewsapi-appsettings.k8s.json: |
+    {
+      "Logging": {
+        "ELK": {
+          "Enabled": {{ .Values.config.logging.elk.enabled }},
+          "Url": {{ printf "http://%s:%s@%s:9200" 
+                             .Values.config.logging.elk.username 
+                             .Values.config.logging.elk.password 
+                             (include "tradewsapi.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
+          "Username": "{{ .Values.config.logging.elk.username }}",
+          "Password": "{{ .Values.config.logging.elk.password }}"
+        },
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft.Hosting.Lifetime": "Information",
+          "Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware": "Information"
+        }
+      },
+      "Serilog": {
+        "MinimumLevel": {
+          "Default": "Warning",
+          "Override": {
+            "Microsoft": "Warning",
+            "System": "Warning",
+            "Microsoft.AspNetCore.HttpLogging": "Warning",
+            "Microsoft.AspNetCore.Hosting.Diagnostics": "Warning",
+            "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
+            "Microsoft.AspNetCore.Routing": "Warning"
+          }
+        }
+      },
+      "RbApiClient": {
+          "URL": "http://haproxy.common:8080/RBApi/"
+        },
+      "AllowedHosts": "*",
+      "Token": {
+        "Issuer": "http://tradesoft-xhcp-identityserver",
+        "Audience": "",
+        "RequireHttpsMetadata": false
+      },
+      "IdentityServer": {
+        "Uri": "http://tradesoft-xhcp-identityserver",
+        "ClientId": "",
+        "ClientSecret": ""
+      },
+      {{- if .Values.config.kafka.securityEnabled -}}
+      "KafkaProducer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "groupid": "xHCP.tradesoft-xhcp-tradewsapi",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true,
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      {{- else -}}
+      "KafkaProducer": {
+        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}",
+        "groupid": "xHCP.tradesoft-xhcp-tradewsapi",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true
+      },
+      {{- end }}
+      "Redis": {
+        "Host": {{ include "tradewsapi.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }},
+        "Port": {{ .Values.config.redis.port }},
+        "DbId": 15,
+        "Password": "{{ .Values.config.redis.password }}",
+        "AllowAdmin": false,
+        "ClientName": "Tradewsapi",
+        "ReconnectRetryPolicy": 5000,
+        "AbortOnConnectFail": false,
+        "StreamMaxLength": 100000,
+        "StreamUseRandomConsumerNames": true,
+        "StreamConsumerGroupName": "",
+        "StreamConsumerName": "",
+        "StreamBatchCount": 5000
+      },
+      "KafkaQueuesCsv": "OrderErrorEvent",
+      "RedisQueuesCsv": "EQTrans,EQTransFill,EQPosition,EQIssuesPosition,FundTrans,FundTefasTrans,FundPosition,FincPosition,EQChain,CashPosition,DTTrans,DTTransFill,DTPosition,Cost,EQSession,DTSession"
+    }

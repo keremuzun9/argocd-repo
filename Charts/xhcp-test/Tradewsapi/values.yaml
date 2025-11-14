@@ -1,0 +1,56 @@
+global:
+  namespace: xhcp
+  appName: tradesoft-xhcp-tradewsapi
+  appPrefix: tradesoft-xhcp
+  commonSuffix: common
+
+replicaCount: 1
+
+image:
+  repository: io.tradesoft.com.tr/xhcp/tradewsapi 
+  tag: dev 
+  pullPolicy: Always
+
+config:
+  configMapKeyRefName: xhcp-config-test
+  
+  # ----------------------------------------------------
+  # ConfigMap İçindeki Değişkenler (Vault/Ortam Bağımlı)
+  # ----------------------------------------------------
+  
+  logging:
+    elk:
+      enabled: true
+      host: elasticsearch 
+      username: elastic
+      password: "<path:xhcp-test/data/values/#loggingElkPassword>"
+      
+  kafka:
+    securityEnabled: false 
+    secure:
+      bootstrapservers: "<path:xhcp-test/data/values/#configKafkaSecureBootstrapservers>"
+      saslpassword: "<path:xhcp-test/data/values/#configKafkaSecureSaslpassword>" 
+      saslusername: "<path:xhcp-test/data/values/#configKafkaSecureSaslusername>"
+    insecure: 
+      bootstrapservers: "<path:xhcp-test/data/values/#configKafkaInsecureBootstrapservers>"
+
+  redis:
+    host: haproxy
+    port: 6379
+    password: "<path:xhcp-test/data/values/#redisPassword>"
+    dbId: 15
+    
+  
+resources:
+  limits:
+    cpu: 200m
+    memory: 512Mi
+  requests:
+    cpu: 20m
+    memory: 128Mi 
+
+ingress:
+  enabled: true
+  host: "<path:xhcp-test/data/values/#ingressHost>"
+  path: /tradews(/|$)(.*)
+  rewrite: /$2

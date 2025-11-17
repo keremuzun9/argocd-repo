@@ -1,0 +1,149 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "reportapi.configMapName" . }}
+  namespace: {{ .Values.global.namespace }}
+data:
+  {{ .Values.global.appName }}-reportapi-appsettings.k8s.json: |
+    {
+      "UseClientRateLimiting": false,
+      "ClientRateLimiting": {
+        "EnableEndpointRateLimiting": true,
+        "StackBlockedRequests": false,
+        "HttpStatusCode": 429,
+        "GeneralRules": [
+          {
+            "Endpoint": "*:/api/who/*",
+            "Period": "7s",
+            "Limit": 3
+          },
+          {
+            "Endpoint": "*",
+            "Period": "1s",
+            "Limit": 2
+          }
+        ]
+      },
+      "RbApiClient": {
+          "URL": "https://"
+        },
+      "Logging": {
+        "ELK": {
+          "Enabled": {{ .Values.config.logging.elk.enabled }},
+          "Url": {{ printf "http://%s:%s@%s:9200" 
+                             .Values.config.logging.elk.username 
+                             .Values.config.logging.elk.password 
+                             .Values.config.logging.elk.host | quote }},
+          "Username": "{{ .Values.config.logging.elk.username }}",
+          "Password": "{{ .Values.config.logging.elk.password }}"
+        },
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft.Hosting.Lifetime": "Information",
+          "Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware": "Information"
+        }
+      },
+      "Serilog": {
+        "MinimumLevel": {
+          "Default": "Information",
+          "Override": {
+            "Microsoft": "Warning",
+            "System": "Warning",
+            "Microsoft.AspNetCore.HttpLogging": "Information",
+            "Microsoft.AspNetCore.Hosting.Diagnostics": "Warning",
+            "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
+            "Microsoft.AspNetCore.Routing": "Warning"
+          }
+        }
+      },
+      "DataSource": "Altibase",
+      "JWT": {
+        "Key": "426d45f6-6ce6-4684-a437-2eeb94ebefcb"
+      },
+      "IdentityServer": {
+        "Uri": "http://tradesoft-xhcp-identityserver",
+        "ClientId": "",
+        "ClientSecret": ""
+      },
+      "PDApiClientSettings": {
+        "URL": "https://io.tradesoft.com.tr/price/"
+      },
+      "Redis": {
+        "Host": {{ include "reportapi.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }},
+        "Port": {{ .Values.config.redis.port }},
+        "Password": {{ if .Values.config.redis.password }}"{{ .Values.config.redis.password }}"{{ else }}null{{ end }},
+        "AllowAdmin": false,
+        "ClientName": "Exchangeapi",
+        "ReconnectRetryPolicy": 5000,
+        "AbortOnConnectFail": false
+      },
+      {{- if .Values.config.kafka.securityEnabled -}}
+      "KafkaProducer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
+        "groupid": "",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true,
+        "saslmechanism": "ScramSha512",
+        "saslpassword": "{{ .Values.config.kafka.secure.saslpassword }}",
+        "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
+        "securityprotocol": "SaslPlaintext"
+      },
+      {{- else -}}
+      "KafkaProducer": {
+        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}"
+      },
+      "KafkaConsumer": {
+        "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}", 
+        "groupid": "",
+        "enableautocommit": true,
+        "statisticsintervalms": 5000,
+        "sessiontimeoutms": 6000,
+        "autooffsetreset": 0,
+        "enablepartitioneof": true
+      },
+      {{- end }}
+      "MssqlDbConfig": {
+        "ConnectionString": ""
+      },
+      "AltibaseDbConfigXmobile": {
+        "ConnectionString": "",
+        "InitialCatalog": "XMOBILE",
+        "CacheEnvironment": "X"
+      },
+      "JsonCustomSettings": {
+        "ToLocalTimeDisable": true,
+        "InvariantRequestCultureEnabled": true
+      },
+      "XffHeadersPrefix": "XHCP",
+      "AllowedHosts": "*",
+      "VirtualDirectory": "",
+      "StorageSettings": {
+        "Enabled": true,
+        "SSL": true,
+        "Endpoint": "{{ .Values.config.storage.endpoint }}",
+        "AccessKey": "{{ .Values.config.storage.accessKey }}",
+        "SecretKey": "{{ .Values.config.storage.secretKey }}"
+      },
+      "ReportApiSettings": { 
+        "Name": "ReportAPIClient",
+        "Url": "https://ReportApi/"
+      },
+      "NotificationAPIClientSettings": {
+        "Name": "NotificationAPIClient",
+        "Url": "http://tradesoft-xhcp-notificationapi/"
+      },
+       "BrokerageAPIClientSettings": {
+         "Name": "BrokerageAPIClient",
+         "Url": "http://tradesoft-xhcp-brokerageapi/"
+      }
+    }

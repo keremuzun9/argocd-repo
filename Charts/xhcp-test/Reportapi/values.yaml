@@ -40,7 +40,7 @@ config:
     password: "<path:xhcp-test/data/values/#redisPassword>"
 
   storage:
-    endpoint: "<path:xhcp-test/data/values/#minioUrl"
+    endpoint: "<path:xhcp-test/data/values/#minioUrl>"
     accessKey: "<path:xhcp-test/data/values/#minioAccessKey>"
     secretKey: "<path:xhcp-test/data/values/#minioSecretKey>"
 

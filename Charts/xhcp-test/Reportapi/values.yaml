@@ -42,7 +42,7 @@ config:
   storage:
     endpoint: "<path:xhcp-test/data/values/#minioUrl"
     accessKey: "<path:xhcp-test/data/values/#minioAccessKey>"
-    secretKey: "<path:xhcp-test/data/values/#minioSecretKey"
+    secretKey: "<path:xhcp-test/data/values/#minioSecretKey>"
 
 ingress:
   enabled: true

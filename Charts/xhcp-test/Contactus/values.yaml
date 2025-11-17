@@ -1,0 +1,31 @@
+global:
+  namespace: xhcp
+  appName: tradesoft-xhcp-contactus
+  appPrefix: tradesoft-xhcp-contactus
+  commonSuffix: common
+
+replicaCount: 0 
+
+image:
+  repository: io.tradesoft.com.tr/xhcp/xhcpcontactus 
+  tag: dev 
+  pullPolicy: Always
+
+config:
+  configMapKeyRefName: ""
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 256Mi
+  requests:
+    cpu: 25m
+    memory: 128Mi 
+
+ingress:
+  enabled: true
+  host: "<path:xhcp-test/data/values/#ingressHost>"
+
+service:
+  port: 80
+  targetPort: 80

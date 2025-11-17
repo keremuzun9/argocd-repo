@@ -1,0 +1,23 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  name: {{ .Values.global.appName }}-ingress
+  namespace: {{ .Values.global.namespace }}
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: {{ .Values.global.appName }}
+                port:
+                  number: {{ .Values.service.port }}
+            path: /xhcpcontactus(/|$)(.*)
+            pathType: ImplementationSpecific
+{{- end }}

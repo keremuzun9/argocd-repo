@@ -1,29 +1,55 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  # helper.tpl'den gelen dinamik ad: tradesoft-xhcp-alertservice-appsettings
   name: {{ include "alertservice.configMapName" . }}
   namespace: {{ .Values.global.namespace }}
 data:
-  # subPath adı: tradesoft-xhcp-alertservice-appsettings.k8s.json
   {{ .Values.global.appPrefix }}-alertservice-appsettings.k8s.json: |
     {
-      "Serilog": {
-        "MinimumLevel": {
-          "Default": "Information",
-          "Override": {
-            "Microsoft": "Warning",
-            "System": "Warning",
-            "Microsoft.AspNetCore.HttpLogging": "Information",
-            "Microsoft.AspNetCore.Hosting.Diagnostics": "Warning",
-            "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
-            "Microsoft.AspNetCore.Routing": "Warning"
-          }
-        }
+      "Logging": {
+            "LogLevel": {
+                "Default": "Information",
+                "Microsoft": "Warning",
+                "Microsoft.Hosting.Lifetime": "Information"
+            }
+        },
+        "Serilog": {
+            "Using": [
+                "Serilog.Sinks.Elasticsearch"
+            ],
+            "MinimumLevel": {
+                "Default": "Information",
+                "Override": {
+                    "Microsoft": "Warning",
+                    "System": "Warning",
+                    "Microsoft.AspNetCore.HttpLogging": "Information",
+                    "Microsoft.AspNetCore.Hosting.Diagnostics": "Information",
+                    "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
+                    "Microsoft.AspNetCore.Routing": "Warning"
+                }
+            },
+            "WriteTo": [{
+                    "Name": "Elasticsearch",
+                    "Args": {
+                        "nodeUris": {{ printf "http://%s:%s@%s:9200" 
+                             .Values.config.logging.elk.username 
+                             .Values.config.logging.elk.password 
+                             (include "alertservice.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
+                        "batchAction": "Create",
+                        "indexFormat": "{{ .Values.global.appName }}", 
+                        "customFormatter": "Serilog.Formatting.Elasticsearch.ElasticsearchJsonFormatter, Serilog.Formatting.Elasticsearch",
+                        "autoRegisterTemplate": true,
+                        "typeName": null,
+                        "detectElasticsearchVersion": true,
+                        "InlineFields": true
+                    }
+                }
+            ]
       },
       "RbApiClient": {
-        "URL": "http://haproxy.common:8080/RBApi/"
+        "URL": {{ printf "http://%s:8080/RBApi/" (include "alertservice.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix)) | quote }}
       },
+      {{- if .Values.config.isProd }}  
       "IdentityServerOptions": {
         "URL": "https://authio.tradesoft.com.tr",
         "Client": "xhcp.public",
@@ -39,12 +65,26 @@ data:
         "IndexUrl": "wss://io.tradesoft.com.tr/pricewsindex/index",
         "WarrantUrl": "wss://io.tradesoft.com.tr/pricewswarrant/warrant"
       },
+      {{- else }}
+      "IdentityServerOptions": {
+        "URL": "https://testauthio.tradesoft.com.tr",
+        "Client": "xhcp.public",
+        "ClientSecret": "68ea7e67df524a3abc565c05ec3dd943",
+        "GrantType": "client_credentials"
+      },
+      "PriceWebSocket": {
+        "URL": "wss://testio.tradesoft.com.tr/pricewslive/live"
+      },
+      "WebSocketSettings": {
+        "LiveUrl": "wss://testio.tradesoft.com.tr/pricewslive/live",
+        "DelayedUrl": "wss://testio.tradesoft.com.tr/pricewsdelayed/delayed",
+        "IndexUrl": "wss://testio.tradesoft.com.tr/pricewsindex/index",
+        "WarrantUrl": "wss://testio.tradesoft.com.tr/pricewswarrant/warrant"
+      },
+      {{- end }}
       "NotificationAPIClientSettings": {
         "Name": "NotificationAPIClient",
-        "Url": "http:///"
-      },
-      "DataSourceConfig": {
-        "Source": "Altibase"
+        "Url": "http://tradesoft-xhcp-notificationapi/"
       },
       "MssqlDbConfig": {
         "ConnectionString": "Application Name=xHCP.Conn.Mssql.Test;data source=10.0.155.5;initial catalog=gtpbrdbtsdev;user id=10.0.155.5;Password=10.0.155.5;persist security info=True;"
@@ -65,7 +105,7 @@ data:
       },
       "KafkaConsumer": {
         "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
-        "groupid": "xHCP.tradesoft-xhcp-alertservice",
+        "groupid": "{{ .Values.global.appName }}",
         "enableautocommit": true,
         "statisticsintervalms": 5000,
         "sessiontimeoutms": 6000,
@@ -82,7 +122,7 @@ data:
       },
       "KafkaConsumer": {
         "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}",
-        "groupid": "xHCP.Alert.Service",
+        "groupid": "{{ .Values.global.appName }}",
         "enableautocommit": true,
         "statisticsintervalms": 5000,
         "sessiontimeoutms": 6000,
@@ -95,27 +135,12 @@ data:
         "Host": {{ include "alertservice.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }},
         "Port": {{ .Values.config.redis.port }},
         "Password": "{{ .Values.config.redis.password }}",
-        "AllowAdmin": {{ .Values.config.redis.allowAdmin }},
-        "ClientName": "{{ .Values.config.redis.clientName }}",
-        "ReconnectRetryPolicy": {{ .Values.config.redis.reconnectRetryPolicy }},
-        "AbortOnConnectFail": {{ .Values.config.redis.abortOnConnectFail }},
+        "AllowAdmin": false, 
+        "ClientName": "Alertservice", 
+        "ReconnectRetryPolicy": 5000, 
+        "AbortOnConnectFail": false, 
         "Configuration": {{ printf "%s:%s,connectTimeout=10000,syncTimeout=10000" 
                              (include "alertservice.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix))
                              (.Values.config.redis.port | toString) | quote }}
-      },
-      "Logging": {
-        "ELK": {
-          "Enabled": {{ .Values.config.logging.elk.enabled }},
-          "Url": {{ printf "http://%s:%s@%s:9200" 
-                             .Values.config.logging.elk.username 
-                             .Values.config.logging.elk.password 
-                             (include "alertservice.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
-          "Username": "{{ .Values.config.logging.elk.username }}",
-          "Password": "{{ .Values.config.logging.elk.password }}"
-        },
-        "LogLevel": {
-          "Default": "Information",
-          "Microsoft.Hosting.Lifetime": "Information"
-        }
       }
     }

@@ -15,7 +15,7 @@ spec:
         paths:
           - backend:
               service:
-                name: {{ .Values.ingress.serviceName }}
+                name: {{ .Values.global.appName }}
                 port:
                   number: 80
             path: /

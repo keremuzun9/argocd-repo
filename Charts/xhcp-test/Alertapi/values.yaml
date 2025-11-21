@@ -2,8 +2,8 @@
 
 global:
   namespace: xhcp
-  appName: tradesoft-xhcp-alertapi 
-  appPrefix: tradesoft-xhcp 
+  appName: tradesoft-xhcp-alertapi
+  appPrefix: tradesoft-xhcp
   commonSuffix: common
 
 replicaCount: 1

@@ -40,7 +40,7 @@ config:
   redis:
     host: haproxy
     port: 6379
-    password: "<path:xhcp-test/data/values/#redisPassword>
+    password: "<path:xhcp-test/data/values/#redisPassword>"
 
 resources:
   limits:

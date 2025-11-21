@@ -134,12 +134,12 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   key: ConnectionStrings__DbContext
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ .Values.config.configMapKeyRefName }}
             - name: DataSource
               valueFrom:
                 configMapKeyRef:
                   key: DataSource
-                  name: {{ include "alertservice.configMapName" . }}
+                  name: {{ .Values.config.configMapKeyRefName }}
           ports:
             - containerPort: 80
               protocol: TCP

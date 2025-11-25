@@ -11,7 +11,7 @@
 {{- define "hostWithSuffix" -}}
 {{- $prefix := .hostPrefix -}}
 {{- $suffix := .commonSuffix -}}
-{{- $port := .port -}}
+{{- $port := .port | toString -}}  # <-- Portu string'e çeviriyoruz
 {{- if $suffix }}
 {{ printf "%s.%s:%s" $prefix $suffix $port }}
 {{- else }}

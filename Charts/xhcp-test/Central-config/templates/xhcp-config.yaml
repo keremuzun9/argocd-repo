@@ -19,7 +19,6 @@ data:
     Connection Idle Lifetime=300;
     Connection Pruning Interval=10;
     Application Name=xHcp;
-
   AltibaseDbConfig__ConnectionString: {{ .Values.altibase.connectionString }}
 
   IdentityServer__Uri: {{ .Values.identityServer.uri }}

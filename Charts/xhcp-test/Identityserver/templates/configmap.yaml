@@ -10,13 +10,13 @@ data:
       "DatavendorIdentityServerSettings": {
         "Url": "https://authio.tradesoft.com.tr",
         "ClientId": "{{ .Values.config.datavendor.clientId }}",
-        "ClientSecret": "{{ .Values.config..clientSecret }}"
+        "ClientSecret": "{{ .Values.config.clientSecret }}"
       },
       {{- else }}
       "DatavendorIdentityServerSettings": {
         "Url": "https://testauthio.tradesoft.com.tr",
         "ClientId": "{{ .Values.config.datavendor.clientId }}",
-        "ClientSecret": "{{ .Values.config..clientSecret }}"
+        "ClientSecret": "{{ .Values.config.clientSecret }}"
       },
       {{- end }}
       "RbApiClient": {

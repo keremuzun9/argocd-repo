@@ -12,6 +12,7 @@ image:
   pullPolicy: Always
 
 config:
+  env: "test"
   configMapKeyRefName: xhcp-config-test 
   
   # ----------------------------------------------------
@@ -38,6 +39,46 @@ config:
     host: haproxy
     port: 6379
     password: "<path:xhcp-test/data/values/#redisPassword>"
+
+  messagingService:
+    sms:
+      provider: "GTP"
+      enable: false
+    email:
+      provider: "GTP"
+      enable: false
+    notification:
+      provider: "FIREBASE"
+      enable: false
+
+  postaGuvercini:
+    endpoint: "https://otpsms.postaguvercini.com/api_ws/smsservice.asmx"
+    username: ""
+    password: "<path:xhcp-test/data/values/#postaGuverciniPassword>"
+
+  smartMessage:
+    baseAddress: "https://api.smartmessage.com"
+    tokenPath: "identityapi/openId/user/authenticate"
+    smsPath: "otpmanager/transactional/sms/send"
+    email: ""
+    password: "<path:xhcp-test/data/values/#smartMessagePassword>"
+    clientId: ""
+    clientSecret: ""
+    transactionId: ""
+    operator: ""
+
+  dengage:
+    baseAddress: "http://10.184.194.11:9050"
+    tokenPath: "auth/login"
+    smsPath: "transactional/sendSms"
+    username: ""
+    password: "<path:xhcp-test/data/values/#dengagePassword>"
+    accountId: 8
+    smsTrustDay: 0
+    smsType: "BULK"
+    poolId: 57
+    preventDuplicate: true
+    timeout: 10
     
 resources:
   limits:

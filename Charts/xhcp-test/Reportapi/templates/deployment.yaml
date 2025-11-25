@@ -22,6 +22,10 @@ spec:
       labels:
         app: {{ .Values.global.appName }}
     spec:
+      hostAliases:
+        - ip: {{ .Values.config.storage.privateLBIP }}
+          hostnames:
+            - "{{ .Values.config.storage.endpoint }}"
       containers:
       - env:
         - name: ASPNETCORE_URLS

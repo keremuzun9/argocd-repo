@@ -26,8 +26,7 @@ spec:
       containers:
       - env:
         - name: ASPNETCORE_URLS
-          value: http://+:80
-        # 🚨 TÜM ENV'ler Ortak ConfigMap'i referans alır
+          value: http://+:80r
         - name: RbApiClient__URL
           valueFrom:
             configMapKeyRef:
@@ -154,7 +153,6 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
-        # subPath cmsapi'ye uyarlandı
         - mountPath: /app/appsettings.json
           name: config-vol
           readOnly: true
@@ -168,6 +166,5 @@ spec:
       volumes:
       - configMap:
           defaultMode: 420
-          # Kendi ConfigMap Adı helper'dan çekildi
           name: {{ include "cmsapi.configMapName" . }}
         name: config-vol

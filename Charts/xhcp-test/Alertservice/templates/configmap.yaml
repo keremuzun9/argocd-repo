@@ -36,7 +36,7 @@ data:
                              .Values.config.logging.elk.password 
                              (include "alertservice.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
                         "batchAction": "Create",
-                        "indexFormat": "{{ .Values.global.appName }}", 
+                        "indexFormat": {{ printf "%s-log-%s" .Values.config.env .Values.global.appName | quote }}, 
                         "customFormatter": "Serilog.Formatting.Elasticsearch.ElasticsearchJsonFormatter, Serilog.Formatting.Elasticsearch",
                         "autoRegisterTemplate": true,
                         "typeName": null,
@@ -50,7 +50,7 @@ data:
         "URL": {{ printf "http://%s:8080/RBApi/" (include "alertservice.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix)) | quote }}
       },
       {{- if .Values.config.isProd }}  
-      "IdentityServerOptions": {
+      "DatavendorIdentityServerSettingss": {
         "URL": "https://authio.tradesoft.com.tr",
         "Client": "xhcp.public",
         "ClientSecret": "68ea7e67df524a3abc565c05ec3dd943",
@@ -66,7 +66,7 @@ data:
         "WarrantUrl": "wss://io.tradesoft.com.tr/pricewswarrant/warrant"
       },
       {{- else }}
-      "IdentityServerOptions": {
+      "DatavendorIdentityServerSettings": {
         "URL": "https://testauthio.tradesoft.com.tr",
         "Client": "xhcp.public",
         "ClientSecret": "68ea7e67df524a3abc565c05ec3dd943",

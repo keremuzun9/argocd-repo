@@ -12,6 +12,7 @@ image:
   pullPolicy: Always
 
 config:
+  env: "test"
   configMapKeyRefName: xhcp-config-test 
   
   # ----------------------------------------------------
@@ -38,6 +39,12 @@ config:
     host: haproxy
     port: 6379
     password: "<path:xhcp-test/data/values/#redisPassword>"
+
+  storage:
+    endpoint: "<path:xhcp-test/data/values/#minioUrl>"
+    accessKey: "<path:xhcp-test/data/values/#minioAccessKey>"
+    secretKey: "<path:xhcp-test/data/values/#minioSecretKey>"
+    privateLBIP: 10.10.10.10
 
 resources:
   limits:

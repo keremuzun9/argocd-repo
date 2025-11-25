@@ -6,29 +6,32 @@ metadata:
 data:
   {{ .Values.global.appPrefix }}-identityserver-appsettings.k8s.json: |
     {
-      "IdentityServerMarketSettings": {
-        "Url": "https://testauthio.tradesoft.com.tr",
-        "ClientId": "",
-        "ClientSecret": "58555c13d5fc468681278f3de89d97ba"
+      {{- if .Values.config.isProd }}
+      "DatavendorIdentityServerSettings": {
+        "Url": "https://authio.tradesoft.com.tr",
+        "ClientId": "{{ .Values.config.datavendor.clientId }}",
+        "ClientSecret": "{{ .Values.config..clientSecret }}"
       },
+      {{- else }}
+      "DatavendorIdentityServerSettings": {
+        "Url": "https://testauthio.tradesoft.com.tr",
+        "ClientId": "{{ .Values.config.datavendor.clientId }}",
+        "ClientSecret": "{{ .Values.config..clientSecret }}"
+      },
+      {{- end }}
       "RbApiClient": {
-          "URL": "http://haproxy.common:8080/RBApi/"
-        },
+        "URL": {{ printf "http://%s:8080/RBApi/" (include "identityserver.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix)) | quote }}
+      },
       "TSAuthAPIClientSettings": {
         "Name": "TSAuthAPIClient",
         "Url": "https://ts.tradesoft.com.tr/MobSSO/"
       },
       "NotificationAPIClientSettings": {
         "Name": "NotificationAPIClient",
-        "Url": "http://"
+        "Url": "http://tradesoft-xhcp-notificationapi"
       },
-      "IdentityServerUIRedirectUris": "",
       "IdentityServer": {
-        "Uri": "",
-        "Issuer": "",
-        "ClientId": "",
-        "ClientSecret": "",
-        "SSO": true
+        "Uri": "http://tradesoft-xhcp-identityserver",
       },
       "IdentityServerSettings": {
         "AesKey": "yqqNakaqF53IFP2RDXhI9llWhNhXhgYh",
@@ -38,60 +41,52 @@ data:
         "AccountTitle": "xMobile",
         "SecretKey": "f68f1fe894d548a1bbc66165c46e61eb"
       },
-      "DataSource": "Altibase",
-      "Serilog": {
-        "MinimumLevel": {
-          "Default": "Information",
-          "Override": {
-            "Microsoft": "Warning",
-            "System": "Warning",
-            "Microsoft.AspNetCore.HttpLogging": "Information",
-            "Microsoft.AspNetCore.Hosting.Diagnostics": "Warning",
-            "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
-            "Microsoft.AspNetCore.Routing": "Warning",
-            "IdentityServer4.Endpoints.IntrospectionEndpoint": "Warning",
-            "IdentityServer4.Hosting.IdentityServerMiddleware": "Warning",            
-            "IdentityServer4.Services.DefaultTokenCreationService" : "Warning"
-          }
-        },
-      "Filter": [
-        {
-          "Name": "ByExcluding",
-          "Args": {
-            "expression": "RequestPath = '/connect/introspect' or RequestPath = '/.well-known/openid-configuration/jwks' or RequestPath = '/.well-known/openid-configuration'"
-          }
-        }
-      ]        
-      },
       "Logging": {
-        "ELK": {
-          "Enabled": {{ .Values.config.logging.elk.enabled }},
-          "Url": {{ printf "http://%s:%s@%s:9200" 
+            "LogLevel": {
+                "Default": "Information",
+                "Microsoft": "Warning",
+                "Microsoft.Hosting.Lifetime": "Information"
+            }
+        },
+        "Serilog": {
+            "Using": [
+                "Serilog.Sinks.Elasticsearch"
+            ],
+            "MinimumLevel": {
+                "Default": "Information",
+                "Override": {
+                    "Microsoft": "Warning",
+                    "System": "Warning",
+                    "Microsoft.AspNetCore.HttpLogging": "Information",
+                    "Microsoft.AspNetCore.Hosting.Diagnostics": "Information",
+                    "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
+                    "Microsoft.AspNetCore.Routing": "Warning"
+                }
+            },
+            "Filter": [{
+                    "Name": "ByExcluding",
+                    "Args": {
+                        "expression": "RequestPath = '/connect/introspect' or RequestPath = '/.well-known/openid-configuration/jwks' or RequestPath = '/.well-known/openid-configuration' or loginResponse.MessageCode = 'ERRORMSG_CHECK_CREDENTIALS' or  loginResponse.MessageCode = 'ERRORMSG_MULTIPLE_CONTACTS_FOUND' or  loginResponse.MessageCode = 'WRONGUSERPASS'  or  loginResponse.MessageCode = 'ERRorMSG_LOGIN_BLOCKED_FROM_LOGIN_FAILED' or  messageTemplate= 'Otp is  verified {@VerifyOTPResponse}' or  loginResponse.MessageCode = 'GTP_INTERNETACCOUNTNOTFOUND' or  messageTemplate= 'Refresh token validation failed. aborting, {@details}' or  message = 'Invalid refresh token' or  loginResponse.MessageCode = 'INTERNET_RIGHT_NOT_FOUND' or  messageTemplate= 'Invalid refresh token' or (RequestPath = '/connect/token' and EventId.Name = 'RequestBody')"
+                    }
+                }
+            ],
+            "WriteTo": [{
+                    "Name": "Elasticsearch",
+                    "Args": {
+                        "nodeUris": {{ printf "http://%s:%s@%s:9200" 
                              .Values.config.logging.elk.username 
                              .Values.config.logging.elk.password 
                              (include "identityserver.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
-          "Username": "{{ .Values.config.logging.elk.username }}",
-          "Password": "{{ .Values.config.logging.elk.password }}"
-        },
-        "LogLevel": {
-          "Default": "Information",
-          "Microsoft": "Warning",
-          "Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware": "Information"
-        }
-      },
-      "Telemetry": {
-        "Metrics": {
-          "Enabled": false,
-          "HttpMetricsEnabled": true,
-          "AspnetCoreEnabled": true,
-          "RuntimeEnabled": true
-        },
-        "Tracing": {
-          "Enabled": false,
-          "AgentHost": "172.16.208.176",
-          "AgentPort": 14268,
-          "Endpoint": "http://172.16.208.176:14268/api/traces"
-        }
+                        "batchAction": "Create",
+                        "indexFormat": {{ printf "%s-log-%s" .Values.config.env .Values.global.appName | quote }}, 
+                        "customFormatter": "Serilog.Formatting.Elasticsearch.ElasticsearchJsonFormatter, Serilog.Formatting.Elasticsearch",
+                        "autoRegisterTemplate": true,
+                        "typeName": null,
+                        "detectElasticsearchVersion": true,
+                        "InlineFields": true
+                    }
+                }
+            ]
       },
       "AllowedHosts": "*",
       "VirtualDirectory": "",
@@ -135,7 +130,7 @@ data:
       },
       "KafkaConsumer": {
         "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
-        "groupid": "xHCP.tradesof-xhcp-identityserver",
+        "groupid": "",
         "enableautocommit": true,
         "statisticsintervalms": 5000,
         "sessiontimeoutms": 6000,
@@ -146,23 +141,18 @@ data:
         "saslusername": "{{ .Values.config.kafka.secure.saslusername }}",
         "securityprotocol": "SaslPlaintext"
       },
-      {{- else -}}
+      {{- else }}
       "KafkaProducer": {
         "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}"
       },
       "KafkaConsumer": {
         "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}",
-        "groupid": "xHCP.tradesof-xhcp-identityserver",
+        "groupid": "",
         "enableautocommit": true,
         "statisticsintervalms": 5000,
         "sessiontimeoutms": 6000,
         "autooffsetreset": 0,
-        "enablepartitioneof": true
+        "enablepartitioneof": true,
       },
       {{- end }}
-      "EnquraAPIClientSettings": {
-        "Name": "EnquraAPIClient",
-        "Url": "https://es1.enqura.com",
-        "AppKey": "5408BE8976FD8744A89D8DCD50229C03E91B45D37994DB499DAEF991C50E48D6"
-      }
     }

@@ -12,6 +12,7 @@ image:
   pullPolicy: Always
 
 config:
+  env: "test"
   configMapKeyRefName: xhcp-config-test 
   
   # ----------------------------------------------------
@@ -23,13 +24,11 @@ config:
       enabled: true
       host: elasticsearch 
       username: elastic
-      # VAULT YOLU
       password: "<path:xhcp-test/data/values/#loggingElkPassword>"
     
   kafka:
     securityEnabled: false
     secure:
-      # VAULT YOLLARI
       bootstrapservers: "<path:xhcp-test/data/values/#configKafkaSecureBootstrapservers>"
       saslpassword: "<path:xhcp-test/data/values/#configKafkaSecureSaslpassword>" 
       saslusername: "<path:xhcp-test/data/values/#configKafkaSecureSaslusername>"

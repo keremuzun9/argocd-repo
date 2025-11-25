@@ -12,6 +12,7 @@ image:
   pullPolicy: Always
 
 config:
+  env: "test"
   configMapKeyRefName: xhcp-config-test
   
   # ----------------------------------------------------
@@ -29,6 +30,9 @@ config:
     host: haproxy
     port: 6379
     password: "<path:xhcp-test/data/values/#redisPassword>"
+
+  mdm:
+    connectionHost: "10.20.30.40:8083" 
     
   
 resources:

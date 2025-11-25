@@ -6,7 +6,7 @@ metadata:
 data:
   {{ .Values.global.appPrefix }}-nextevent-appsettings.k8s.json: |
     {
-        "Logging": {
+      "Logging": {
             "LogLevel": {
                 "Default": "Information",
                 "Microsoft": "Warning",
@@ -36,7 +36,7 @@ data:
                              .Values.config.logging.elk.password 
                              (include "nextevent.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
                         "batchAction": "Create",
-                        "indexFormat": "{{ .Values.global.appName }}", 
+                        "indexFormat": {{ printf "%s-log-%s" .Values.config.env .Values.global.appName | quote }}, 
                         "customFormatter": "Serilog.Formatting.Elasticsearch.ElasticsearchJsonFormatter, Serilog.Formatting.Elasticsearch",
                         "autoRegisterTemplate": true,
                         "typeName": null,
@@ -45,10 +45,10 @@ data:
                     }
                 }
             ]
-        },
-        "RbApiClient": {
-            "URL": "http://"
-        },
+      },
+      "RbApiClient": {
+        "URL": {{ printf "http://%s:8080/RBApi/" (include "nextevent.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix)) | quote }}
+      },
         {{- if .Values.config.kafka.securityEnabled -}}
         "KafkaProducer": {
           "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
@@ -103,6 +103,5 @@ data:
             "Name": "NotificationAPIClient",
             "Url": "http://tradesoft-xhcp-notificationapi/"
         },
-        "DataSource": "Altibase",
         "KafkaEvents": "HubAccountFlow,Dividend,RegisterUserDevice,CustomerAddress,CustomerBaseInformation"
     }

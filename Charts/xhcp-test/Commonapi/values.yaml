@@ -12,7 +12,8 @@ image:
   pullPolicy: Always
 
 config:
-  # ENV değişkenleri için referans alınan Ortak ConfigMap Adı
+  isProd: false
+  env: "test"
   configMapKeyRefName: xhcp-config-test
   
   # ----------------------------------------------------

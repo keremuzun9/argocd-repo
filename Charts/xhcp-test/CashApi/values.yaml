@@ -1,18 +1,19 @@
 global:
   namespace: xhcp
-  appName: tradesoft-xhcp-cashapi # Uygulama adı güncellendi
+  appName: tradesoft-xhcp-cashapi
   appPrefix: tradesoft-xhcp
   commonSuffix: common
 
 replicaCount: 1 
 
 image:
-  repository: io.tradesoft.com.tr/xhcp/cashapi # Image repository güncellendi
+  repository: io.tradesoft.com.tr/xhcp/cashapi
   tag: dev 
   pullPolicy: Always
 
 config:
-  # ENV değişkenleri için referans alınan Ortak ConfigMap Adı
+  env: "test"
+  isProd: false
   configMapKeyRefName: xhcp-config-test 
   
   # ----------------------------------------------------
@@ -24,13 +25,11 @@ config:
       enabled: true
       host: elasticsearch 
       username: elastic
-      # VAULT YOLU (cashapi'ye uyarlandı)
       password: "<path:xhcp-test/data/values/#loggingElkPassword>"
       
   kafka:
     securityEnabled: false
     secure:
-      # VAULT YOLLARI (cashapi'ye uyarlandı)
       bootstrapservers: "<path:xhcp-test/data/values/#configKafkaSecureBootstrapservers>"
       saslpassword: "<path:xhcp-test/data/values/#configKafkaSecureSaslpassword>" 
       saslusername: "<path:xhcp-test/data/values/#configKafkaSecureSaslusername>"
@@ -40,7 +39,6 @@ config:
   redis:
     host: haproxy
     port: 6379
-    # VAULT YOLU (cashapi'ye uyarlandı)
     password: "<path:xhcp-test/data/values/#redisPassword>" 
 
 resources:
@@ -53,5 +51,4 @@ resources:
 
 ingress:
   enabled: true
-  # Host adresi güncellendi
   host: "<path:xhcp-test/data/values/#ingressHost>"

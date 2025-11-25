@@ -12,7 +12,8 @@ image:
   pullPolicy: Always
 
 config:
-  # ENV değişkenleri için referans alınan Ortak ConfigMap Adı
+  env: "test"
+  isProd: false
   configMapKeyRefName: xhcp-config-test 
   
   # ----------------------------------------------------
@@ -24,14 +25,11 @@ config:
       enabled: true
       host: elasticsearch 
       username: elastic
-      # VAULT YOLU
       password: "<path:xhcp-test/data/values/#loggingElkPassword>"  
       
   kafka:
-    # ConfigMap'teki Kafka ayarları secure
     securityEnabled: false
     secure:
-      # VAULT YOLLARI
       bootstrapservers: "<path:xhcp-test/data/values/#configKafkaSecureBootstrapservers>"
       saslpassword: "<path:xhcp-test/data/values/#configKafkaSecureSaslpassword>" 
       saslusername: "<path:xhcp-test/data/values/#configKafkaSecureSaslusername>"
@@ -41,7 +39,6 @@ config:
   redis:
     host: haproxy
     port: 6379
-    # VAULT YOLU
     password: "<path:xhcp-test/data/values/#redisPassword>" 
 
 resources:

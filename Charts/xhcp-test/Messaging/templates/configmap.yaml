@@ -6,67 +6,94 @@ metadata:
 data:
   {{ .Values.global.appPrefix }}-messaging-appsettings.k8s.json: |
     {
-      "DataSourceConfig": {
-        "Source": "Altibase"
+      "Logging": {
+            "LogLevel": {
+                "Default": "Information",
+                "Microsoft": "Warning",
+                "Microsoft.Hosting.Lifetime": "Information"
+            }
+        },
+        "Serilog": {
+            "Using": [
+                "Serilog.Sinks.Elasticsearch"
+            ],
+            "MinimumLevel": {
+                "Default": "Information",
+                "Override": {
+                    "Microsoft": "Warning",
+                    "System": "Warning",
+                    "Microsoft.AspNetCore.HttpLogging": "Information",
+                    "Microsoft.AspNetCore.Hosting.Diagnostics": "Information",
+                    "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
+                    "Microsoft.AspNetCore.Routing": "Warning"
+                }
+            },
+            "WriteTo": [{
+                    "Name": "Elasticsearch",
+                    "Args": {
+                        "nodeUris": {{ printf "http://%s:%s@%s:9200" 
+                             .Values.config.logging.elk.username 
+                             .Values.config.logging.elk.password 
+                             (include "messaging.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
+                        "batchAction": "Create",
+                        "indexFormat": {{ printf "%s-log-%s" .Values.config.env .Values.global.appName | quote }}, 
+                        "customFormatter": "Serilog.Formatting.Elasticsearch.ElasticsearchJsonFormatter, Serilog.Formatting.Elasticsearch",
+                        "autoRegisterTemplate": true,
+                        "typeName": null,
+                        "detectElasticsearchVersion": true,
+                        "InlineFields": true
+                    }
+                }
+            ]
       },
       "RbApiClient": {
-          "URL": "http://haproxy.common:8080/RBApi/"
-        },
+        "URL": {{ printf "http://%s:8080/RBApi/" (include "messaging.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix)) | quote }}
+      },
       "MessagingServiceSettings": {
         "Sms": {
-          "Provider": "DENGAGE",
-          "Enable": true
+          "Provider": "{{ .Values.config.messagingService.sms.provider }}",
+          "Enable": {{ .Values.config.messagingService.sms.enable }}
         },
         "Email": {
-          "Provider": "SMTP",
-          "Enable": false
+          "Provider": "{{ .Values.config.messagingService.email.provider }}",
+          "Enable": {{ .Values.config.messagingService.email.enable }}
         },
         "Notification": {
-          "Provider": "FIREBASE",
-          "Enable": true
+          "Provider": "{{ .Values.config.messagingService.notification.provider }}",
+          "Enable": {{ .Values.config.messagingService.notification.enable }}
         }
       },
+
       "PostaGuverciniSettings": {
-        "Endpoint": "https://otpsms.postaguvercini.com/api_ws/smsservice.asmx",
-        "Username": "BTRADE11",
-        "Password": "8u7y65t",
-        "ForeignEnabled": true,
-        "ForeignEndpoint": "https://y.postaguvercini.com/api_ws/smsservice.asmx",
-        "ForeignUsername": "",
-        "ForeignPassword": ""
+        "Endpoint": "{{ .Values.config.postaGuvercini.endpoint }}",
+        "Username": "{{ .Values.config.postaGuvercini.username }}",
+        "Password": "{{ .Values.config.postaGuvercini.password }}",
       },
+
       "SmartMessageSettings": {
-        "BaseAddress": "https://api.smartmessage.com",
-        "TokenPath": "identityapi/openId/user/authenticate",
-        "SmsPath": "otpmanager/transactional/sms/send",
-        "Email": "",
-        "Password": "",
-        "ClientId": "",
-        "ClientSecret": "",
-        "TransactionId": "",
-        "Operator": ""
+        "BaseAddress": "{{ .Values.config.smartMessage.baseAddress }}",
+        "TokenPath": "{{ .Values.config.smartMessage.tokenPath }}",
+        "SmsPath": "{{ .Values.config.smartMessage.smsPath }}",
+        "Email": "{{ .Values.config.smartMessage.email }}",
+        "Password": "{{ .Values.config.smartMessage.password }}",
+        "ClientId": "{{ .Values.config.smartMessage.clientId }}",
+        "ClientSecret": "{{ .Values.config.smartMessage.clientSecret }}",
+        "TransactionId": "{{ .Values.config.smartMessage.transactionId }}",
+        "Operator": "{{ .Values.config.smartMessage.operator }}"
       },
-      "SmtpSettings": {
-        "DisplayName": "xHCP SMTP",
-        "From": "sender@xhcp.com",
-        "Username": "",
-        "Password": "",
-        "Host": "smtp-relay.sendinblue.com",
-        "Port": 587,
-        "EnableSsl": true
-      },
+
       "DengageSettings": {
-        "BaseAddress": "http://10.184.194.11:9050",
-        "TokenPath": "auth/login",
-        "SmsPath": "transactional/sendSms",
-        "Username": "",
-        "Password": "",
-        "AccountId": 8,
-        "SmsTrustDay": 0,
-        "SmsType": "BULK",
-        "PoolId": 57,
-        "PreventDuplicate": true,
-        "Timeout": 10
+        "BaseAddress": "{{ .Values.config.dengage.baseAddress }}",
+        "TokenPath": "{{ .Values.config.dengAGE.tokenPath }}",
+        "SmsPath": "{{ .Values.config.dengAGE.smsPath }}",
+        "Username": "{{ .Values.config.dengage.username }}",
+        "Password": "{{ .Values.config.dengage.password }}",
+        "AccountId": {{ .Values.config.dengage.accountId }},
+        "SmsTrustDay": {{ .Values.config.dengage.smsTrustDay }},
+        "SmsType": "{{ .Values.config.dengage.smsType }}",
+        "PoolId": {{ .Values.config.dengage.poolId }},
+        "PreventDuplicate": {{ .Values.config.dengage.preventDuplicate }},
+        "Timeout": {{ .Values.config.dengage.timeout }}
       },
       {{- if .Values.config.kafka.securityEnabled -}}
       "KafkaProducer": {
@@ -110,35 +137,6 @@ data:
         "ConnectionString": "DSN=altibase.common;uid=XMOBILE;pwd=XMOBILE;NLS_USE=UTF8;PORT=20300;Pooling=true;ConnectionLifetime=15;",
         "InitialCatalog": "XMOBILE",
         "CacheEnvironment": "X"
-      },
-      "Logging": {
-        "ELK": {
-          "Enabled": {{ .Values.config.logging.elk.enabled }},
-          "Url": {{ printf "http://%s:%s@%s:9200" 
-                             .Values.config.logging.elk.username 
-                             .Values.config.logging.elk.password 
-                             (include "messaging.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
-          "Username": "{{ .Values.config.logging.elk.username }}",
-          "Password": "{{ .Values.config.logging.elk.password }}"
-        },
-        "LogLevel": {
-          "Default": "Information",
-          "Microsoft": "Warning",
-          "Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware": "Information"
-        }
-      },
-      "Serilog": {
-        "MinimumLevel": {
-          "Default": "Information",
-          "Override": {
-            "Microsoft": "Warning",
-            "System": "Warning",
-            "Microsoft.AspNetCore.HttpLogging": "Information",
-            "Microsoft.AspNetCore.Hosting.Diagnostics": "Warning",
-            "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
-            "Microsoft.AspNetCore.Routing": "Warning"
-          }
-        }
       },
       "Redis": {
         "Host": {{ include "messaging.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }},

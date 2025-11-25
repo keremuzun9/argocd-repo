@@ -7,23 +7,15 @@ data:
   {{ .Values.global.appPrefix }}-pricedatareceiver-appsettings.k8s.json: |
     {
       "MDM": {
-        "Connection": "tcp://:8083",
+        "Connection": {{ printf "tcp://%s" .Values.config.mdm.connectionHost | quote }},
         "PriceRequestInterval": 500
       },
       "RbApiClient": {
-          "URL": "http://haproxy.common:8080/RBApi/"
-        },
+        "URL": {{ printf "http://%s:8080/RBApi/" (include "pricedatareceiver.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix)) | quote }}
+      },
       "Nats": {
-        "Host": "nats://10.0.11.29:4222",
+        "Host": {{ printf "nats://%s:4222" (include "pricedatareceiver.fullHostName" (dict "serviceName" "nats" "suffix" .Values.global.commonSuffix)) | quote }},
         "Sync": 1
-      },
-      "DataSourceConfig": {
-        "Source": "Altibase"
-      },
-      "Serilog": {
-        "MinimumLevel": {
-          "Default": "Debug"
-        }
       },
       "MssqlDbConfig": {
         "ConnectionString": "Application Name=xHCP.Conn.Mssql.Test;data source=10.0.155.5;initial catalog=gtpbrdbtsdev;user id=10.0.155.5;Password=10.0.155.5;persist security info=True;"
@@ -43,18 +35,43 @@ data:
         "AbortOnConnectFail": false
       },
       "Logging": {
-        "LogLevel": {
-          "Default": "Information",
-          "Microsoft.Hosting.Lifetime": "Information"
-        }
+            "LogLevel": {
+                "Default": "Information",
+                "Microsoft": "Warning",
+                "Microsoft.Hosting.Lifetime": "Information"
+            }
+        },
+        "Serilog": {
+            "Using": [
+                "Serilog.Sinks.Elasticsearch"
+            ],
+            "MinimumLevel": {
+                "Default": "Information",
+                "Override": {
+                    "Microsoft": "Warning",
+                    "System": "Warning",
+                    "Microsoft.AspNetCore.HttpLogging": "Information",
+                    "Microsoft.AspNetCore.Hosting.Diagnostics": "Information",
+                    "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
+                    "Microsoft.AspNetCore.Routing": "Warning"
+                }
+            },
+            "WriteTo": [{
+                    "Name": "Elasticsearch",
+                    "Args": {
+                        "nodeUris": {{ printf "http://%s:%s@%s:9200" 
+                             .Values.config.logging.elk.username 
+                             .Values.config.logging.elk.password 
+                             (include "pricedatareceiver.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
+                        "batchAction": "Create",
+                        "indexFormat": {{ printf "%s-log-%s" .Values.config.env .Values.global.appName | quote }}, 
+                        "customFormatter": "Serilog.Formatting.Elasticsearch.ElasticsearchJsonFormatter, Serilog.Formatting.Elasticsearch",
+                        "autoRegisterTemplate": true,
+                        "typeName": null,
+                        "detectElasticsearchVersion": true,
+                        "InlineFields": true
+                    }
+                }
+            ]
       },
-      "ELK": {
-        "Enabled": {{ .Values.config.logging.elk.enabled }},
-        "Url": {{ printf "http://%s:%s@%s:9200" 
-                           .Values.config.logging.elk.username 
-                           .Values.config.logging.elk.password 
-                           (include "pricedatareceiver.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
-        "Username": "{{ .Values.config.logging.elk.username }}",
-        "Password": "{{ .Values.config.logging.elk.password }}"
-      }
     }

@@ -20,9 +20,6 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      annotations:
-        kubectl.kubernetes.io/restartedAt: "2025-08-01T08:15:52Z"
-      creationTimestamp: null
       labels:
         app: {{ .Values.global.appName }}
     spec:
@@ -156,7 +153,6 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
-        # subPath commonapi'ye uyarlandı
         - mountPath: /app/appsettings.json
           name: config-vol
           readOnly: true

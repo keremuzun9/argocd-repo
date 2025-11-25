@@ -1,6 +1,6 @@
 # alertservice/Chart.yaml
 apiVersion: v2
-name: alertservice # Chart adı
+name: alertservice
 description: xHCP Test Alert Service mikroservisi için Helm Chart
 type: application
 version: 0.1.0

@@ -8,19 +8,72 @@ data:
     {
       "AllowedHosts": "*",
       "Logging": {
-        "LogLevel": {
-          "Default": "Information",
-          "Microsoft.AspNetCore": "Warning",
-          "Microsoft.Hosting.Lifetime": "Information"
-        }
+            "LogLevel": {
+                "Default": "Information",
+                "Microsoft": "Warning",
+                "Microsoft.Hosting.Lifetime": "Information"
+            }
+        },
+        "Serilog": {
+            "Using": [
+                "Serilog.Sinks.Elasticsearch"
+            ],
+            "MinimumLevel": {
+                "Default": "Information",
+                "Override": {
+                    "Microsoft": "Warning",
+                    "System": "Warning",
+                    "Microsoft.AspNetCore.HttpLogging": "Information",
+                    "Microsoft.AspNetCore.Hosting.Diagnostics": "Information",
+                    "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
+                    "Microsoft.AspNetCore.Routing": "Warning"
+                }
+            },
+            "WriteTo": [{
+                    "Name": "Elasticsearch",
+                    "Args": {
+                        "nodeUris": {{ printf "http://%s:%s@%s:9200" 
+                             .Values.config.logging.elk.username 
+                             .Values.config.logging.elk.password 
+                             (include "xcmsweb.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
+                        "batchAction": "Create",
+                        "indexFormat": {{ printf "%s-log-%s" .Values.config.env .Values.global.appName | quote }}, 
+                        "customFormatter": "Serilog.Formatting.Elasticsearch.ElasticsearchJsonFormatter, Serilog.Formatting.Elasticsearch",
+                        "autoRegisterTemplate": true,
+                        "typeName": null,
+                        "detectElasticsearchVersion": true,
+                        "InlineFields": true
+                    }
+                }
+            ]
       },
       "RbApiClient": {
-          "URL": "http://haproxy:8080/RBApi/"
-        },
-      "ConnectionStrings": {
-        "DefaultConnection": "data source=;persist security info=True;initial catalog=;user id=;password=;TrustServerCertificate=True;",
-        "AzureAccessKey": "DefaultEndpointsProtocol=https;AccountName=tradesoftxhcpstorage;AccountKey=;EndpointSuffix=core.windows.net;"
+        "URL": {{ printf "http://%s:8080/RBApi/" (include "xcmsweb.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix)) | quote }}
       },
+      "ConnectionStrings": {
+        "DefaultConnection": {{ printf "Data Source=%s;Initial Catalog=%s;User id=%s;Password=%s;TrustServerCertificate=%t;" \
+            .Values.config.defaultConnection.dataSource \
+            .Values.config.defaultConnection.initialCatalog \
+            .Values.config.defaultConnection.userId \
+            .Values.config.defaultConnection.password \
+            .Values.config.defaultConnection.trustServerCertificate | quote }},
+        "AzureAccessKey": "DefaultEndpointsProtocol=https;AccountName=tradesoftxhcpstorage;AccountKey=<path:xhcp-test/data/values/#azureAccessKey>;EndpointSuffix=core.windows.net;",
+      },
+      {{- if .Values.config.isProd }}
+      "DatavendorIdentityServerSettings": {
+        "URL": "https://authio.tradesoft.com.tr",
+        "Client": "xhcp.public",
+        "ClientSecret": "68ea7e67df524a3abc565c05ec3dd943",
+        "GrantType": "client_credentials"
+      },
+      {{- else }}
+      "DatavendorIdentityServerSettings": {
+        "URL": "https://testauthio.tradesoft.com.tr",
+        "Client": "xhcp.public",
+        "ClientSecret": "68ea7e67df524a3abc565c05ec3dd943",
+        "GrantType": "client_credentials"
+      },
+      {{- end }}
       "MailSettings": {
         "From": "no-reply@tradesoft.com.tr",
         "FromDisplayName": "Tradesoft",
@@ -56,7 +109,7 @@ data:
       "VirtualDirectory": "/xcms",
       "DefaultLicenceCodeForUseReport": "REALTIME_PRICES_MIXED",
       "SSO": {
-        "IdentityServerUri": "https:///",
+        "IdentityServerUri": "https://tradesoft-xhcp-identityserver",
         "ClientId": "xhcp.cms",
         "ClientSecret": "595f619bd4a9408f93854a633b5d8c18",
         "GrantType": "client_credentials"

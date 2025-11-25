@@ -1,5 +1,5 @@
 apiVersion: v2
-name: cmsapi # Chart adı güncellendi
+name: cmsapi
 description: xHCP CMSAPI API mikroservisi için Helm Chart
 type: application
 version: 0.1.0 

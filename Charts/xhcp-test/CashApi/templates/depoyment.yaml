@@ -153,7 +153,6 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
-        # subPath cashapi'ye uyarlandı
         - mountPath: /app/appsettings.json
           name: config-vol
           readOnly: true
@@ -167,6 +166,5 @@ spec:
       volumes:
       - configMap:
           defaultMode: 420
-          # Kendi ConfigMap Adı helper'dan çekildi
           name: {{ include "cashapi.configMapName" . }}
         name: config-vol

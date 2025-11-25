@@ -30,7 +30,6 @@ spec:
       - env:
         - name: ASPNETCORE_URLS
           value: http://+:80
-        # 🚨 TÜM ENV'ler Ortak ConfigMap'i referans alır (fiba-matriks-config-test)
         - name: RbApiClient__URL
           valueFrom:
             configMapKeyRef:
@@ -157,11 +156,10 @@ spec:
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
-        # Kendi ConfigMap'ini mount eder (fiba-matriks-brokerageapi-appsettings)
         - mountPath: /app/appsettings.json
           name: config-vol
           readOnly: true
-          subPath: {{ .Values.global.appPrefix }}-alertservice-appsettings.k8s.json
+          subPath: {{ .Values.global.appPrefix }}-brokerageapi-appsettings.k8s.json
       dnsPolicy: ClusterFirst
       imagePullSecrets:
       - name: nexus2
@@ -171,6 +169,5 @@ spec:
       volumes:
       - configMap:
           defaultMode: 420
-          # Kendi ConfigMap Adı
           name: {{ include "brokerageapi.configMapName" . }}
         name: config-vol

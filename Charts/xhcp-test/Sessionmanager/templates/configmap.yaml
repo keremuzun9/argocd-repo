@@ -6,39 +6,46 @@ metadata:
 data:
   {{ .Values.global.appPrefix }}-session-manager-appsettings.k8s.json: |
     {     
-    "DataSource": "Altibase",
-    "Serilog": {
-      "MinimumLevel": {
-        "Default": "Information",
-        "Override": {
-          "Microsoft": "Warning",
-          "System": "Warning",
-          "Microsoft.AspNetCore.HttpLogging": "Information",
-          "Microsoft.AspNetCore.Hosting.Diagnostics": "Warning",
-          "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
-          "Microsoft.AspNetCore.Routing": "Warning",
-          "IdentityServer4.Endpoints.IntrospectionEndpoint": "Warning",
-          "IdentityServer4.Hosting.IdentityServerMiddleware": "Warning",            
-          "IdentityServer4.Services.DefaultTokenCreationService" : "Warning"
-        }
-      }     
-    },
     "Logging": {
-      "ELK": {
-        "Enabled": {{ .Values.config.logging.elk.enabled }},
-        "Url": {{ printf "http://%s:%s@%s:9200" 
-                           .Values.config.logging.elk.username 
-                           .Values.config.logging.elk.password 
-                           (include "session-manager.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
-        "Username": "{{ .Values.config.logging.elk.username }}",
-        "Password": "{{ .Values.config.logging.elk.password }}"
-      },
-      "LogLevel": {
-        "Default": "Information",
-        "Microsoft": "Information",
-        "Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware": "Information"
-      }
-    },          
+            "LogLevel": {
+                "Default": "Information",
+                "Microsoft": "Warning",
+                "Microsoft.Hosting.Lifetime": "Information"
+            }
+        },
+        "Serilog": {
+            "Using": [
+                "Serilog.Sinks.Elasticsearch"
+            ],
+            "MinimumLevel": {
+                "Default": "Information",
+                "Override": {
+                    "Microsoft": "Warning",
+                    "System": "Warning",
+                    "Microsoft.AspNetCore.HttpLogging": "Information",
+                    "Microsoft.AspNetCore.Hosting.Diagnostics": "Information",
+                    "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
+                    "Microsoft.AspNetCore.Routing": "Warning"
+                }
+            },
+            "WriteTo": [{
+                    "Name": "Elasticsearch",
+                    "Args": {
+                        "nodeUris": {{ printf "http://%s:%s@%s:9200" 
+                             .Values.config.logging.elk.username 
+                             .Values.config.logging.elk.password 
+                             (include "session-manager.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
+                        "batchAction": "Create",
+                        "indexFormat": {{ printf "%s-log-%s" .Values.config.env .Values.global.appName | quote }},, 
+                        "customFormatter": "Serilog.Formatting.Elasticsearch.ElasticsearchJsonFormatter, Serilog.Formatting.Elasticsearch",
+                        "autoRegisterTemplate": true,
+                        "typeName": null,
+                        "detectElasticsearchVersion": true,
+                        "InlineFields": true
+                    }
+                }
+            ]
+    },        
     "MssqlDbConfig": {
       "ConnectionString": "Application Name=xHCP.Conn.Mssql.Test;data source=10.0.155.5;initial catalog=gtpbrdbtsdev;user id=10.0.155.5;Password=10.0.155.5;persist security info=True;"
     },

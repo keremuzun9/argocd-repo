@@ -1,5 +1,5 @@
 apiVersion: v2
-name: cashapi # Chart adı (cashapi)
+name: cashapi
 description: xHCP Cashapi API mikroservisi için Helm Chart
 type: application
 version: 0.1.0 

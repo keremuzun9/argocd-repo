@@ -6,61 +6,48 @@ metadata:
 data:
   {{ .Values.global.appPrefix }}-createaccountapi-appsettings.k8s.json: |
     {
-      "Company": "",
-      "CompanyCreateAccount": "",
-      "SwaggerBasePath": "",
-      "UseClientRateLimiting": false,
-      "ClientRateLimiting": {
-        "EnableEndpointRateLimiting": true,
-        "StackBlockedRequests": false,
-        "HttpStatusCode": 429,
-        "GeneralRules": [
-          {
-            "Endpoint": "*:/api/who/*",
-            "Period": "7s",
-            "Limit": 3
-          },
-          {
-            "Endpoint": "*",
-            "Period": "1s",
-            "Limit": 2
-          }
-        ]
-      },
-      "RbApiClient": {
-          "URL": "http://haproxy:8080/RBApi/"
-        },
       "Logging": {
-        "ELK": {
-          "Enabled": {{ .Values.config.logging.elk.enabled }},
-          "Url": {{ printf "http://%s:%s@%s:9200" 
+            "LogLevel": {
+                "Default": "Information",
+                "Microsoft": "Warning",
+                "Microsoft.Hosting.Lifetime": "Information"
+            }
+        },
+        "Serilog": {
+            "Using": [
+                "Serilog.Sinks.Elasticsearch"
+            ],
+            "MinimumLevel": {
+                "Default": "Information",
+                "Override": {
+                    "Microsoft": "Warning",
+                    "System": "Warning",
+                    "Microsoft.AspNetCore.HttpLogging": "Information",
+                    "Microsoft.AspNetCore.Hosting.Diagnostics": "Information",
+                    "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
+                    "Microsoft.AspNetCore.Routing": "Warning"
+                }
+            },
+            "WriteTo": [{
+                    "Name": "Elasticsearch",
+                    "Args": {
+                        "nodeUris": {{ printf "http://%s:%s@%s:9200" 
                              .Values.config.logging.elk.username 
                              .Values.config.logging.elk.password 
                              (include "createaccountapi.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
-          "Username": "{{ .Values.config.logging.elk.username }}",
-          "Password": "{{ .Values.config.logging.elk.password }}"
-        },
-        "LogLevel": {
-          "Default": "Information",
-          "Microsoft.Hosting.Lifetime": "Information",
-          "Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware": "Information"
-        }
+                        "batchAction": "Create",
+                        "indexFormat": {{ printf "%s-log-%s" .Values.config.env .Values.global.appName | quote }}, 
+                        "customFormatter": "Serilog.Formatting.Elasticsearch.ElasticsearchJsonFormatter, Serilog.Formatting.Elasticsearch",
+                        "autoRegisterTemplate": true,
+                        "typeName": null,
+                        "detectElasticsearchVersion": true,
+                        "InlineFields": true
+                    }
+                }
+            ]
       },
-      "Serilog": {
-        "MinimumLevel": {
-          "Default": "Information",
-          "Override": {
-            "Microsoft": "Warning",
-            "System": "Warning",
-            "Microsoft.AspNetCore.HttpLogging": "Information",
-            "Microsoft.AspNetCore.Hosting.Diagnostics": "Warning",
-            "Microsoft.AspNetCore.Mvc.Infrastructure": "Warning",
-            "Microsoft.AspNetCore.Routing": "Warning"
-          }
-        }
-      },
-      "DataSourceConfig": {
-        "Source": "Altibase"
+      "RbApiClient": {
+        "URL": {{ printf "http://%s:8080/RBApi/" (include "createaccountapi.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix)) | quote }}
       },
       "IdentityServer": {
         "Uri": "http://tradesoft-xhcp-identityserver"
@@ -69,16 +56,16 @@ data:
         "Name": "NotificationAPIClient",
         "Url": "http://tradesoft-xhcp-notification"
       },
-      "ReportApiSettings": {
-        "Name": "ReportApiClient",
-        "URL": "http://haproxy:8080/ReportApiTest/"
+      "ReportApiSettings": { 
+        "Name": "ReportAPIClient",
+        "URL": {{ printf "http://%s:8080/ReportApi/" (include "createaccountapi.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix)) | quote }}
       },
       "StorageSettings": {
         "Enabled": true,
         "SSL": true,
-        "Endpoint": "",
-        "AccessKey": "",
-        "SecretKey": ""
+        "Endpoint": "{{ .Values.config.storage.endpoint }}",
+        "AccessKey": "{{ .Values.config.storage.accessKey }}",
+        "SecretKey": "{{ .Values.config.storage.secretKey }}"
       },
       "Redis": {
         "Host": {{ include "createaccountapi.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }},
@@ -102,7 +89,7 @@ data:
       },
       "KafkaConsumer": {
         "bootstrapservers": "{{ .Values.config.kafka.secure.bootstrapservers }}",
-        "groupid": "xHCP.tradesoft-xhcp-createaccountapi",
+        "groupid": "",
         "enableautocommit": true,
         "statisticsintervalms": 5000,
         "sessiontimeoutms": 6000,
@@ -119,7 +106,7 @@ data:
       },
       "KafkaConsumer": {
         "bootstrapservers": "{{ .Values.config.kafka.insecure.bootstrapservers }}",
-        "groupid": "xHCP.CreateAccountApi",
+        "groupid": "",
         "enableautocommit": true,
         "statisticsintervalms": 5000,
         "sessiontimeoutms": 6000,

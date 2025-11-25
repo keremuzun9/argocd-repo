@@ -12,6 +12,8 @@ image:
   pullPolicy: Always
 
 config:
+  isProd: false
+  env: "test"
   configMapKeyRefName: xhcp-config-test
   
   # ----------------------------------------------------
@@ -43,6 +45,10 @@ config:
     endpoint: "<path:xhcp-test/data/values/#minioUrl>"
     accessKey: "<path:xhcp-test/data/values/#minioAccessKey>"
     secretKey: "<path:xhcp-test/data/values/#minioSecretKey>"
+    privateLBIP: 10.10.10.10
+
+  reportApi:
+    url: "musteri.com.tr/ReportApi/"
 
 ingress:
   enabled: true

@@ -14,7 +14,7 @@ image:
 config:
   env: "test"
   isProd: false
-  configMapKeyRefName: xhcp-config-test 
+  configMapKeyRefName: xhcp-config-test
   
   # ----------------------------------------------------
   # ConfigMap İçindeki Değişkenler (Vault/Ortam Bağımlı)

@@ -30,17 +30,17 @@ data:
 
   Logging__ELK__Enabled: {{ .Values.elk.enabled }}
   Logging__ELK__Url: {{ printf "http://%s:%s@%s:9200" 
-                             .Values.config.logging.elk.username 
-                             .Values.config.logging.elk.password 
-                             (include "centralconfig.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }}
+                             .Values.elk.username 
+                             .Values.elk.password 
+                             (include "centralconfig.fullHostName" (dict "serviceName" .Values.elk.host "suffix" .Values.global.commonSuffix)) | quote }}
   Logging__ELK__Username: {{ .Values.elk.username }}
   Logging__ELK__Password: {{ .Values.elk.password }}
 
   Redis__Configuration: {{ printf "%s:%s,connectTimeout=10000,syncTimeout=10000" 
-                             (include "centralconfig.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix))
-                             (.Values.config.redis.port | toString) | quote }}
+                             (include "centralconfig.fullHostName" (dict "serviceName" .Values.redis.host "suffix" .Values.global.commonSuffix))
+                             (.Values.redis.port | toString) | quote }}
   Redis__DbId: {{ .Values.redis.dbId }}
-  Redis__Host: {{ include "alertservice.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix) | quote }}
+  Redis__Host: {{ include "centralconfig.fullHostName" (dict "serviceName" .Values.redis.host "suffix" .Values.global.commonSuffix) | quote }}
   Redis__Password: {{ .Values.redis.password }}
   Redis__Port: {{ .Values.redis.port }}
   {{- if .Values.config.isProd }}
@@ -48,7 +48,7 @@ data:
   {{- else }}
   PDApiClientSettings__URL: https://testio.tradesoft.com.tr/price/
   {{- end }}
-  RbApiClient__URL: {{ printf "http://%s:8080/RBApi/" (include "centralconfig.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix)) | quote }}
+  RbApiClient__URL: {{ printf "http://%s:8080/RBApi/" (include "centralconfig.fullHostName" (dict "serviceName" .Values.redis.host "suffix" .Values.global.commonSuffix)) | quote }}
 
-  ReportApiSettings: {{ printf "http://%s:8080/ReportApi/" (include "centralconfig.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix)) | quote }}
-  ReportApiSettings__URL: {{ printf "http://%s:8080/ReportApi/" (include "centralconfig.fullHostName" (dict "serviceName" .Values.config.redis.host "suffix" .Values.global.commonSuffix)) | quote }}
+  ReportApiSettings: {{ printf "http://%s:8080/ReportApi/" (include "centralconfig.fullHostName" (dict "serviceName" .Values.redis.host "suffix" .Values.global.commonSuffix)) | quote }}
+  ReportApiSettings__URL: {{ printf "http://%s:8080/ReportApi/" (include "centralconfig.fullHostName" (dict "serviceName" .Values.redis.host "suffix" .Values.global.commonSuffix)) | quote }}

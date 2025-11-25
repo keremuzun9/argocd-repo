@@ -1,5 +1,5 @@
 apiVersion: v2
-name: yf-config-prod
+name: xhcp-central-config
 description: "xHCP Central ConfigMap"
 type: application
 version: 0.1.0

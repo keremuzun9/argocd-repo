@@ -36,6 +36,7 @@ elk:
   enabled: "<path:xhcp-test/data/values/#loggingElkEnabled>"
   username: "<path:xhcp-test/data/values/#loggingElkUsername>"
   password: "<path:xhcp-test/data/values/#loggingElkPassword>"
+  host: elasticsearch
 
 kafka:
   producerBootstrap: "<path:xhcp-test/data/values/#configKafkaInsecureBootstrapservers>"

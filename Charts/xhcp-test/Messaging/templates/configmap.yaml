@@ -67,7 +67,7 @@ data:
       "PostaGuverciniSettings": {
         "Endpoint": "{{ .Values.config.postaGuvercini.endpoint }}",
         "Username": "{{ .Values.config.postaGuvercini.username }}",
-        "Password": "{{ .Values.config.postaGuvercini.password }}",
+        "Password": "{{ .Values.config.postaGuvercini.password }}"
       },
 
       "SmartMessageSettings": {
@@ -84,8 +84,8 @@ data:
 
       "DengageSettings": {
         "BaseAddress": "{{ .Values.config.dengage.baseAddress }}",
-        "TokenPath": "{{ .Values.config.dengAGE.tokenPath }}",
-        "SmsPath": "{{ .Values.config.dengAGE.smsPath }}",
+        "TokenPath": "{{ .Values.config.dengage.tokenPath }}",
+        "SmsPath": "{{ .Values.config.dengage.smsPath }}",
         "Username": "{{ .Values.config.dengage.username }}",
         "Password": "{{ .Values.config.dengage.password }}",
         "AccountId": {{ .Values.config.dengage.accountId }},

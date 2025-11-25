@@ -1,0 +1,44 @@
+configMap:
+  name: xhcp-config-test
+  namespace: xchp
+
+company: TS
+
+config: 
+  isProd: false
+
+global:
+  commonSuffix: common
+
+dataSource:
+  type: Postgres
+  source: Postgres
+
+connectionStrings:
+  host: psqldb
+  port: 5432
+  username: postgres
+  password: "<path:xhcp-test/data/values/#postgresPassword>"
+
+altibase:
+  connectionString: "DSN=altibasedb;uid=XMOBILE;pwd=xmobile;NLS_USE=UTF8;PORT=20300;Pooling=true;"
+
+identityServer:
+  uri: http://tradesoft-xhcp-identityserver
+
+redis:
+  dbId: 0
+  host: haproxy
+  password: "<path:xhcp-test/data/values/#redisPassword>"
+  port: 6379
+
+elk:
+  enabled: "<path:xhcp-test/data/values/#loggingElkEnabled>"
+  username: "<path:xhcp-test/data/values/#loggingElkUsername>"
+  password: "<path:xhcp-test/data/values/#loggingElkPassword>"
+
+kafka:
+  producerBootstrap: "<path:xhcp-test/data/values/#configKafkaInsecureBootstrapservers>"
+  consumerBootstrap: "<path:xhcp-test/data/values/#configKafkaInsecureBootstrapservers>"
+
+

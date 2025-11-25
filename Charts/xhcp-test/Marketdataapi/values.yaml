@@ -13,7 +13,7 @@ image:
 
 config:
   isProd: false
-  env: "test"
+  env: test
   configMapKeyRefName: xhcp-config-test
   
   # ----------------------------------------------------

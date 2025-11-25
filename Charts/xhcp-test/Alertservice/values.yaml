@@ -14,7 +14,7 @@ image:
   pullPolicy: IfNotPresent
 
 config:
-  env: "test"
+  env: test
   isProd: false
   configMapKeyRefName: xhcp-config-test
   

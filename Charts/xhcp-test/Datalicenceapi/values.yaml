@@ -12,7 +12,7 @@ image:
   pullPolicy: Always
 
 config:
-  env: "test"
+  env: test
   configMapKeyRefName: xhcp-config-test  
   
   # ----------------------------------------------------

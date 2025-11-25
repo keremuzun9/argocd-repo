@@ -9,16 +9,10 @@ data:
   DataSource: {{ .Values.dataSource.type }}
   DataSourceConfig__Source: {{ .Values.dataSource.source }}
 
-  ConnectionStrings__DbContext: |
-    Host={{ include "hostWithSuffix" (dict "hostPrefix" .Values.connectionStrings.host "commonSuffix" .Values.global.commonSuffix "port" .Values.connectionStrings.port) }};
-    Database=XMOBILE;
-    Username={{ .Values.connectionStrings.username }};
-    Password={{ .Values.connectionStrings.password }};
-    Maximum Pool Size=20;
-    Minimum Pool Size=1;
-    Connection Idle Lifetime=300;
-    Connection Pruning Interval=10;
-    Application Name=xHcp;
+  ConnectionStrings__DbContext: {{ printf "Host=%s;Database=XMOBILE;Username=%s;Password=%s;Maximum Pool Size=20;Minimum Pool Size=1;Connection Idle Lifetime=300;Connection Pruning Interval=10;Application Name=xHcp;"
+    (include "hostWithSuffix" (dict "hostPrefix" .Values.connectionStrings.host "commonSuffix" .Values.global.commonSuffix "port" .Values.connectionStrings.port))
+    .Values.connectionStrings.username
+    .Values.connectionStrings.password | quote }}
 
   AltibaseDbConfig__ConnectionString: {{ .Values.altibase.connectionString }}
 

@@ -1,6 +1,6 @@
 configMap:
   name: xhcp-config-test
-  namespace: xchp
+  namespace: xhcp
 
 company: TS
 

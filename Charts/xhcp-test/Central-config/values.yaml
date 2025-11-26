@@ -30,7 +30,7 @@ redis:
   port: "6379"
 
 elk:
-  enabled: "true"
+  enabled: true
   username: "<path:xhcp-test/data/values/#loggingElkUsername>"
   password: "<path:xhcp-test/data/values/#loggingElkPassword>"
   host: elasticsearch

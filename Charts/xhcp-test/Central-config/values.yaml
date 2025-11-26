@@ -16,7 +16,7 @@ dataSource:
 
 connectionStrings:
   host: psqldb
-  port: "5432"
+  port: 5432
   username: postgres
   password: "<path:xhcp-test/data/values/#postgresPassword>"
 
@@ -27,10 +27,10 @@ identityServer:
   uri: http://tradesoft-xhcp-identityserver
 
 redis:
-  dbId: "0"
+  dbId: 0
   host: haproxy
   password: "<path:xhcp-test/data/values/#redisPassword>"
-  port: "6379"
+  port: 6379
 
 elk:
   enabled: true

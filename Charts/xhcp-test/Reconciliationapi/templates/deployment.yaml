@@ -110,11 +110,6 @@ spec:
             configMapKeyRef:
               key: KafkaConsumer__bootstrapservers
               name: {{ .Values.config.configMapKeyRefName }}
-        - name: MssqlDbConfig__ConnectionString
-          valueFrom:
-            configMapKeyRef:
-              key: MssqlDbConfig__ConnectionString
-              name: {{ .Values.config.configMapKeyRefName }}
         - name: AltibaseDbConfig__ConnectionString
           valueFrom:
             configMapKeyRef:

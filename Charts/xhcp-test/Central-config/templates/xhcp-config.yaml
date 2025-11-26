@@ -20,7 +20,7 @@ data:
   KafkaProducer__bootstrapservers: {{ .Values.kafka.producerBootstrap }}
   KafkaConsumer__bootstrapservers: {{ .Values.kafka.consumerBootstrap }}
 
-  Logging__ELK__Enabled: {{ .Values.elk.enabled | quote }}
+  Logging__ELK__Enabled: {{ .Values.elk.enabled }}
   Logging__ELK__Url: {{ printf "http://%s:%s@%s:9200" 
                              .Values.elk.username 
                              .Values.elk.password 

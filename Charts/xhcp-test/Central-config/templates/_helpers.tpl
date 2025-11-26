@@ -13,8 +13,8 @@
 {{- $suffix := .commonSuffix -}}
 {{- $port := .port | toString -}}
 {{- if $suffix }}
-{{ printf "%s.%s:%s" $prefix $suffix $port }}
+{{- printf "%s.%s:%s" $prefix $suffix $port | trim -}} 
 {{- else }}
-{{ printf "%s:%s" $prefix $port }}
+{{- printf "%s:%s" $prefix $port | trim -}}
 {{- end }}
 {{- end }}

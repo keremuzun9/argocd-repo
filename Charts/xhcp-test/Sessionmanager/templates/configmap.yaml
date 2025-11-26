@@ -36,7 +36,7 @@ data:
                              .Values.config.logging.elk.password 
                              (include "session-manager.fullHostName" (dict "serviceName" .Values.config.logging.elk.host "suffix" .Values.global.commonSuffix)) | quote }},
                         "batchAction": "Create",
-                        "indexFormat": {{ printf "%s-log-%s" .Values.config.env .Values.global.appName | quote }},, 
+                        "indexFormat": {{ printf "%s-log-%s" .Values.config.env .Values.global.appName | quote }},
                         "customFormatter": "Serilog.Formatting.Elasticsearch.ElasticsearchJsonFormatter, Serilog.Formatting.Elasticsearch",
                         "autoRegisterTemplate": true,
                         "typeName": null,

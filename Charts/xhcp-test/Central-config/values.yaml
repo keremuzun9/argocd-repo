@@ -23,9 +23,6 @@ connectionStrings:
 altibase:
   connectionString: "DSN=altibasedb;uid=XMOBILE;pwd=xmobile;NLS_USE=UTF8;PORT=20300;Pooling=true;"
 
-identityServer:
-  uri: http://tradesoft-xhcp-identityserver
-
 redis:
   dbId: "0"
   host: haproxy

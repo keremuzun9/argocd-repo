@@ -4,18 +4,18 @@ metadata:
   name: {{ .Values.configMap.name }}
   namespace: {{ .Values.configMap.namespace }}
 data:
-  Company: {{ .Values.company }}
-  DataSource: {{ .Values.dataSource.type }}
-  DataSourceConfig__Source: {{ .Values.dataSource.source }}
+  Company: {{ .Values.company | quote }}
+  DataSource: {{ .Values.dataSource.type | quote }}
+  DataSourceConfig__Source: {{ .Values.dataSource.source | quote }}
 
   ConnectionStrings__DbContext: {{ printf "Host=%s;Database=XMOBILE;Username=%s;Password=%s;Maximum Pool Size=20;Minimum Pool Size=1;Connection Idle Lifetime=300;Connection Pruning Interval=10;Application Name=xHcp;"
       (include "hostWithSuffix" (dict "hostPrefix" .Values.connectionStrings.host "commonSuffix" .Values.global.commonSuffix "port" (.Values.connectionStrings.port | toString)))
       .Values.connectionStrings.username
       .Values.connectionStrings.password | quote }}
 
-  AltibaseDbConfig__ConnectionString: {{ .Values.altibase.connectionString }}
+  AltibaseDbConfig__ConnectionString: {{ .Values.altibase.connectionString | quote }}
 
-  IdentityServer__Uri: {{ .Values.identityServer.uri }}
+  IdentityServer__Uri: http://tradesoft-xhcp-identityserver
 
   KafkaProducer__bootstrapservers: {{ .Values.kafka.producerBootstrap }}
   KafkaConsumer__bootstrapservers: {{ .Values.kafka.consumerBootstrap }}
@@ -31,10 +31,10 @@ data:
   Redis__Configuration: {{ printf "%s:%s,connectTimeout=10000,syncTimeout=10000" 
                              (include "centralconfig.fullHostName" (dict "serviceName" .Values.redis.host "suffix" .Values.global.commonSuffix))
                              (.Values.redis.port | toString) | quote }}
-  Redis__DbId: {{ .Values.redis.dbId }}
+  Redis__DbId: {{ .Values.redis.dbId | quote }}
   Redis__Host: {{ include "centralconfig.fullHostName" (dict "serviceName" .Values.redis.host "suffix" .Values.global.commonSuffix) | quote }}
   Redis__Password: {{ .Values.redis.password }}
-  Redis__Port: {{ .Values.redis.port }}
+  Redis__Port: {{ .Values.redis.port | quote }}
   {{- if .Values.config.isProd }}
   PDApiClientSettings__URL: https://io.tradesoft.com.tr/price/
   {{- else }}

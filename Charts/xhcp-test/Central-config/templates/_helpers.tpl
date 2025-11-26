@@ -12,9 +12,9 @@
 {{- $prefix := .hostPrefix -}}
 {{- $suffix := .commonSuffix -}}
 {{- $port := .port | toString -}}
-{{- if $suffix -}}
-{{- printf "%s.%s:%s" $prefix $suffix $port -}}
-{{- else -}}
-{{- printf "%s:%s" $prefix $port -}}
-{{- end -}}
-{{- end -}}
+{{- if $suffix }}
+{{ printf "%s.%s:%s" $prefix $suffix $port }}
+{{- else }}
+{{ printf "%s:%s" $prefix $port }}
+{{- end }}
+{{- end }}
